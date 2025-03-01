@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -52,6 +53,21 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				metal: {
+					100: '#E8E9EA',
+					200: '#C5C7CA',
+					300: '#9EA2A8',
+					400: '#777C85',
+					500: '#555A63',
+					600: '#3A3E44',
+					700: '#2A2D31',
+					800: '#1A1C1F',
+					900: '#121315',
+				},
+				forge: {
+					500: '#F97316',
+					600: '#EA580C',
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -68,27 +84,60 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			fontFamily: {
+				sans: ['Inter', 'sans-serif'],
+				heading: ['Montserrat', 'sans-serif'],
+			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
+				},
+				'fade-in': {
+					'0%': { opacity: '0' },
+					'100%': { opacity: '1' }
+				},
+				'fade-out': {
+					'0%': { opacity: '1' },
+					'100%': { opacity: '0' }
+				},
+				'slide-up': {
+					'0%': { transform: 'translateY(10px)', opacity: '0' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				'slide-down': {
+					'0%': { transform: 'translateY(-10px)', opacity: '0' },
+					'100%': { transform: 'translateY(0)', opacity: '1' }
+				},
+				'spark': {
+					'0%': { transform: 'translateY(0) scale(0)', opacity: '1' },
+					'50%': { transform: 'translateY(-20px) scale(1)', opacity: '0.8' },
+					'100%': { transform: 'translateY(-40px) scale(0)', opacity: '0' }
+				},
+				'welding': {
+					'0%': { boxShadow: '0 0 5px #F97316, 0 0 10px #F97316, 0 0 15px #F97316, 0 0 20px #F97316', opacity: '0.8' },
+					'50%': { boxShadow: '0 0 10px #F97316, 0 0 20px #F97316, 0 0 30px #F97316, 0 0 40px #F97316', opacity: '1' },
+					'100%': { boxShadow: '0 0 5px #F97316, 0 0 10px #F97316, 0 0 15px #F97316, 0 0 20px #F97316', opacity: '0.8' }
+				},
+				'rotate-gear': {
+					'0%': { transform: 'rotate(0deg)' },
+					'100%': { transform: 'rotate(360deg)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.5s ease-out forwards',
+				'fade-out': 'fade-out 0.5s ease-out forwards',
+				'slide-up': 'slide-up 0.6s ease-out forwards',
+				'slide-down': 'slide-down 0.6s ease-out forwards',
+				'spark': 'spark 0.8s infinite',
+				'welding': 'welding 1.5s infinite',
+				'rotate-gear': 'rotate-gear 8s linear infinite'
 			}
 		}
 	},
