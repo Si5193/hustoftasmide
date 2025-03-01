@@ -56,7 +56,7 @@ const Hero = () => {
             
             <Link
               to="/projects"
-              className="btn-outline border-metal-600 text-white hover:bg-metal-800"
+              className="btn-outline border-metal-600 text-forge-500 hover:bg-metal-800"
             >
               Se våra projekt
             </Link>
