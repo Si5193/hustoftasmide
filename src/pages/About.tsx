@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Layout } from '../components/Layout';
+import { useEffect } from 'react';
+import Layout from '../components/Layout';
 import { Wrench, Users, Award, Clock, ArrowRight, Check } from 'lucide-react';
 
 const About = () => {

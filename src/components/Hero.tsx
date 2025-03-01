@@ -5,14 +5,28 @@ import { Link } from 'react-router-dom';
 const Hero = () => {
   return (
     <section className="relative overflow-hidden bg-metal-900 py-20 text-white md:py-28 lg:py-36">
+      {/* Video Background */}
+      <div className="absolute inset-0 z-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover opacity-50"
+        >
+          <source src="https://videos.pexels.com/video-files/5846598/5846598-hd_1080_1920_25fps.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-metal-900/60"></div>
+      </div>
+
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0 opacity-10 z-10">
         <div className="absolute -right-16 -top-16 h-96 w-96 rounded-full border border-white/20" />
         <div className="absolute bottom-20 left-20 h-64 w-64 rounded-full border border-white/20" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(249,115,22,0.15),transparent)]" />
       </div>
 
-      <div className="container relative px-4 md:px-6">
+      <div className="container relative px-4 md:px-6 z-20">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-6 inline-block rounded-full bg-metal-700/50 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
             <span className="text-forge-500">Kvalitet</span>
@@ -51,7 +65,7 @@ const Hero = () => {
       </div>
       
       {/* Bottom Divider */}
-      <div className="absolute bottom-0 left-0 h-8 w-full overflow-hidden">
+      <div className="absolute bottom-0 left-0 h-8 w-full overflow-hidden z-20">
         <svg
           className="absolute bottom-0 w-full text-background"
           xmlns="http://www.w3.org/2000/svg"
