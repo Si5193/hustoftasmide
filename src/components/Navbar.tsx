@@ -43,15 +43,39 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: 'Hem', path: '/' },
-    { name: 'Om oss', path: '/about' },
-    { name: 'Tjänster', path: '/services' },
-    { name: 'Projekt', path: '/projects' },
-    { name: 'Kontakt', path: '/contact' },
+    { name: 'Hem', path: '#', section: 'top' },
+    { name: 'Om oss', path: '#about', section: 'about' },
+    { name: 'Tjänster', path: '#services', section: 'services' },
+    { name: 'Projekt', path: '#projects', section: 'projects' },
+    { name: 'Kontakt', path: '#contact', section: 'contact' },
   ];
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    closeMenu();
+    
+    if (sectionId === 'top') {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      return;
+    }
+    
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offsetTop = element.offsetTop;
+      window.scrollTo({
+        top: offsetTop - 80, // Adjust for header height
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const isActive = (section: string) => {
+    // Placeholder for active section logic based on scroll position
+    // This can be enhanced with IntersectionObserver for more accurate tracking
+    return false;
   };
 
   return (
@@ -61,26 +85,27 @@ const Navbar = () => {
       }`}
     >
       <div className="container flex items-center justify-between px-4 md:px-6">
-        <Link to="/" className="flex items-center space-x-2 text-white transition-colors">
+        <a href="#" onClick={(e) => scrollToSection(e, 'top')} className="flex items-center space-x-2 text-white transition-colors">
           <Hammer className="text-forge-500" size={28} />
           <span className="text-xl font-bold tracking-tight md:text-2xl">Hustofta</span>
-        </Link>
+        </a>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:block">
           <ul className="flex items-center space-x-6">
             {navLinks.map((link) => (
-              <li key={link.path}>
-                <Link
-                  to={link.path}
+              <li key={link.section}>
+                <a
+                  href={link.path}
+                  onClick={(e) => scrollToSection(e, link.section)}
                   className={`hover-link px-1 py-2 text-sm font-medium transition-colors ${
-                    isActive(link.path)
+                    isActive(link.section)
                       ? 'text-forge-500'
                       : 'text-white hover:text-forge-500'
                   }`}
                 >
                   {link.name}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
@@ -104,10 +129,10 @@ const Navbar = () => {
       >
         <div className="container flex h-full flex-col px-4">
           <div className="flex items-center justify-between py-4">
-            <Link to="/" className="flex items-center space-x-2" onClick={closeMenu}>
+            <a href="#" onClick={(e) => scrollToSection(e, 'top')} className="flex items-center space-x-2">
               <Hammer className="text-forge-500" size={28} />
               <span className="text-xl font-bold">Hustofta</span>
-            </Link>
+            </a>
             <button onClick={closeMenu} aria-label="Close menu">
               <X size={24} />
             </button>
@@ -116,16 +141,16 @@ const Navbar = () => {
           <nav className="flex-1 py-8">
             <ul className="flex flex-col space-y-6">
               {navLinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
+                <li key={link.section}>
+                  <a
+                    href={link.path}
+                    onClick={(e) => scrollToSection(e, link.section)}
                     className={`text-3xl font-medium ${
-                      isActive(link.path) ? 'text-forge-500' : 'text-foreground'
+                      isActive(link.section) ? 'text-forge-500' : 'text-foreground'
                     }`}
-                    onClick={closeMenu}
                   >
                     {link.name}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>

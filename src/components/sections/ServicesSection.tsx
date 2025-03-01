@@ -1,11 +1,10 @@
-
 import { Hammer, Wrench, Cog, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ServiceCard from '../ServiceCard';
 
 const ServicesSection = () => {
   return (
-    <section className="bg-background py-16 md:py-24">
+    <section id="services" className="bg-background py-16 md:py-24">
       <div className="container px-4 md:px-6">
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight text-metal-800 md:text-4xl">

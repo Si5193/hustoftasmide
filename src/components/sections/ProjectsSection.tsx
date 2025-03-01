@@ -16,11 +16,13 @@ interface ProjectsSectionProps {
 
 const ProjectsSection = ({ projects }: ProjectsSectionProps) => {
   return (
-    <ProjectGallery 
-      projects={projects} 
-      title="Våra senaste projekt"
-      subtitle="Upptäck exempel på vårt hantverk och se vad vi kan göra för dig."
-    />
+    <section id="projects" className="py-16 md:py-24">
+      <ProjectGallery 
+        projects={projects} 
+        title="Våra senaste projekt"
+        subtitle="Upptäck exempel på vårt hantverk och se vad vi kan göra för dig."
+      />
+    </section>
   );
 };
 

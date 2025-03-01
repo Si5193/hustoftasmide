@@ -1,10 +1,9 @@
-
 import { Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutSection = () => {
   return (
-    <section className="bg-metal-50 py-16 md:py-24">
+    <section id="about" className="bg-metal-50 py-16 md:py-24">
       <div className="container px-4 md:px-6">
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div className="relative">
