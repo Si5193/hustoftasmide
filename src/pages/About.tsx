@@ -1,7 +1,6 @@
-
-import { useEffect } from 'react';
-import Layout from '../components/Layout';
-import { Clock, Tool, Hammer, Users, Award, ThumbsUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Layout } from '../components/Layout';
+import { Wrench, Users, Award, Clock, ArrowRight, Check } from 'lucide-react';
 
 const About = () => {
   useEffect(() => {
@@ -17,34 +16,34 @@ const About = () => {
 
   const values = [
     {
-      icon: <Tool className="text-forge-500" size={32} />,
+      icon: <Wrench className="text-forge-500" size={32} />,
       title: 'Kvalitet',
       description: 'Vi kompromissar aldrig med kvaliteten. Varje detalj är viktig för att slutresultatet ska bli perfekt.'
     },
     {
-      icon: <Hammer className="text-forge-500" size={32} />,
+      icon: <Users className="text-forge-500" size={32} />,
       title: 'Hantverk',
       description: 'Vi värnar om traditionellt hantverk och kombinerar det med modern teknik för bästa resultat.'
     },
     {
-      icon: <Users className="text-forge-500" size={32} />,
+      icon: <Award className="text-forge-500" size={32} />,
       title: 'Kundservice',
       description: 'Vi sätter alltid kunden i centrum och arbetar för att överträffa förväntningarna.'
     },
     {
-      icon: <Award className="text-forge-500" size={32} />,
+      icon: <Clock className="text-forge-500" size={32} />,
       title: 'Innovation',
       description: 'Vi söker ständigt nya lösningar och metoder för att ligga i framkant av branschen.'
     },
     {
-      icon: <Clock className="text-forge-500" size={32} />,
+      icon: <ArrowRight className="text-forge-500" size={32} />,
       title: 'Punktlighet',
       description: 'Vi respekterar deadlines och levererar alltid enligt överenskommelse.'
     },
     {
-      icon: <ThumbsUp className="text-forge-500" size={32} />,
+      icon: <Check className="text-forge-500" size={32} />,
       title: 'Hållbarhet',
-      description: 'Vi arbetar miljömedvetet och strävar efter hållbara lösningar i alla led.'
+      description: 'Vi arbetar miljömedvetet och sträver efter hållbara lösningar i alla led.'
     },
   ];
 

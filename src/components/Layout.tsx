@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import LoadingScreen from './LoadingScreen';
+import { Toaster } from './ui/toaster';
+import { useToast } from '@/hooks/use-toast';
+import { useLocation } from 'react-router-dom';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,6 +13,8 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const location = useLocation();
 
   const handleLoadingComplete = () => {
     setLoading(false);
@@ -27,6 +32,18 @@ const Layout = ({ children }: LayoutProps) => {
     };
   }, [loading]);
 
+  // Check for 404 errors when the route changes
+  useEffect(() => {
+    // If the path includes "/services" but the Services page doesn't exist yet
+    if (location.pathname.includes('/services')) {
+      toast({
+        title: "Sidan under konstruktion",
+        description: "Denna sida är för närvarande under utveckling.",
+        variant: "default",
+      });
+    }
+  }, [location.pathname, toast]);
+
   return (
     <div className="flex min-h-screen flex-col">
       {loading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
@@ -38,6 +55,7 @@ const Layout = ({ children }: LayoutProps) => {
       </main>
       
       <Footer />
+      <Toaster />
     </div>
   );
 };
