@@ -51,7 +51,7 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
   };
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-12 md:py-16 bg-background">
       {(title || subtitle) && (
         <div className="mb-10 text-center">
           {title && <h2 className="mb-3 text-3xl font-bold text-metal-800 md:text-4xl">{title}</h2>}
@@ -64,7 +64,7 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
           {projects.map((project, index) => (
             <div 
               key={project.id}
-              className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100"
+              className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg"
               onClick={() => openProject(project, index)}
             >
               <div className="aspect-[4/3] overflow-hidden">
