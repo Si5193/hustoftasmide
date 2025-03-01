@@ -85,7 +85,9 @@ const Navbar = () => {
       }`}
     >
       <div className="container flex items-center justify-between px-4 md:px-6">
-        <a href="#" onClick={(e) => scrollToSection(e, 'top')} className="flex items-center space-x-2 text-white transition-colors">
+        <a href="#" onClick={(e) => scrollToSection(e, 'top')} className={`flex items-center space-x-2 transition-colors ${
+          scrolled ? 'text-forge-500' : 'text-white'
+        }`}>
           <Hammer className="text-forge-500" size={28} />
           <span className="text-xl font-bold tracking-tight md:text-2xl">Hustofta</span>
         </a>
@@ -101,7 +103,9 @@ const Navbar = () => {
                   className={`hover-link px-1 py-2 text-sm font-medium transition-colors ${
                     isActive(link.section)
                       ? 'text-forge-500'
-                      : 'text-white hover:text-forge-500'
+                      : scrolled 
+                        ? 'text-forge-500 hover:text-forge-600' 
+                        : 'text-white hover:text-forge-500'
                   }`}
                 >
                   {link.name}
@@ -113,7 +117,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Button */}
         <button 
-          className="flex md:hidden text-white"
+          className={`flex md:hidden ${scrolled ? 'text-forge-500' : 'text-white'}`}
           onClick={toggleMenu}
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
         >
