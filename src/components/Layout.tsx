@@ -6,6 +6,7 @@ import LoadingScreen from './LoadingScreen';
 import { Toaster } from './ui/toaster';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'react-router-dom';
+import ChatWidget from './ChatWidget';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -56,6 +57,7 @@ const Layout = ({ children }: LayoutProps) => {
       
       <Footer />
       <Toaster />
+      <ChatWidget />
     </div>
   );
 };

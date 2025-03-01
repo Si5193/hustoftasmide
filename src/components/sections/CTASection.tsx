@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FacebookIcon } from "lucide-react";
+import ChatWidget from "../ChatWidget";
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
@@ -47,32 +48,34 @@ const CTASection = () => {
   };
 
   return (
-    <section id="contact" className="bg-metal-800 py-16 text-white md:py-20">
-      <div className="container px-4 md:px-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-            Redo att starta ditt projekt?
-          </h2>
-          <p className="mb-8 text-lg text-metal-300">
-            Kontakta oss idag för en kostnadsfri konsultation. Vi hjälper dig att förverkliga dina idéer.
-          </p>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0 justify-center">
-            <button 
-              onClick={() => setOpen(true)}
-              className="btn-primary bg-forge-500 hover:bg-forge-600 px-6 py-3 rounded-md font-medium"
-            >
-              Kontakta oss
-            </button>
-            <button 
-              onClick={openMessenger}
-              className="flex items-center justify-center space-x-2 bg-[#0084FF] hover:bg-[#0070db] text-white px-6 py-3 rounded-md font-medium transition-colors"
-            >
-              <FacebookIcon size={20} />
-              <span>Messenger</span>
-            </button>
+    <>
+      <section id="contact" className="bg-metal-800 py-16 text-white md:py-20">
+        <div className="container px-4 md:px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Redo att starta ditt projekt?
+            </h2>
+            <p className="mb-8 text-lg text-metal-300">
+              Kontakta oss idag för en kostnadsfri konsultation. Vi hjälper dig att förverkliga dina idéer.
+            </p>
+            <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0 justify-center">
+              <button 
+                onClick={() => setOpen(true)}
+                className="btn-primary bg-forge-500 hover:bg-forge-600 px-6 py-3 rounded-md font-medium"
+              >
+                Kontakta oss
+              </button>
+              <button 
+                onClick={openMessenger}
+                className="flex items-center justify-center space-x-2 bg-[#0084FF] hover:bg-[#0070db] text-white px-6 py-3 rounded-md font-medium transition-colors"
+              >
+                <FacebookIcon size={20} />
+                <span>Messenger</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
@@ -144,7 +147,10 @@ const CTASection = () => {
           </form>
         </DialogContent>
       </Dialog>
-    </section>
+      
+      {/* Add the ChatWidget component */}
+      <ChatWidget />
+    </>
   );
 };
 
