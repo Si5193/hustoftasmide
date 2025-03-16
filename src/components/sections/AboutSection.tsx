@@ -8,9 +8,7 @@ const AboutSection = () => {
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-xl">
               <img src="/images/hustofta.jpg" alt="Hustofta Smide" className="h-full w-full object-cover" />
             </div>
-            <div className="absolute -bottom-6 -right-6 z-10 hidden h-60 w-60 rounded-lg border-8 border-white shadow-lg md:block">
-              
-            </div>
+            
             <div className="absolute -left-4 -top-4 h-24 w-24 rounded-full bg-forge-500/20"></div>
           </div>
           
