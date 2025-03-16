@@ -50,10 +50,14 @@ const Hero = () => {
             <span className="text-metal-200">Precision</span>
           </div>
           
-          <h1 className="mb-6 bg-gradient-to-r from-white to-metal-200 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl md:text-5xl lg:text-6xl">
-            Hustofta Smide <br className="hidden sm:inline" />
-            & Mekaniska
-          </h1>
+          <div className="mb-6 flex justify-center">
+            <img 
+              src="/images/hslogo.png" 
+              alt="Hustofta Smide & Mekaniska" 
+              className="h-auto max-w-full" 
+              style={{ maxHeight: '120px' }}
+            />
+          </div>
           
           <p className="mx-auto mb-8 md:mb-10 max-w-2xl text-base md:text-lg lg:text-xl text-metal-200">
             Vi kombinerar traditionellt hantverk med modern teknologi för att skapa hållbara lösningar i metall för både företag och privatpersoner.
