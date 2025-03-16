@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +24,7 @@ const CTASection = () => {
   const [customerType, setCustomerType] = useState('private');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +72,7 @@ const CTASection = () => {
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
+        <DialogContent className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[650px] max-h-[90vh] w-[90vw]">
           <DialogHeader>
             <DialogTitle>Kontakta oss</DialogTitle>
             <DialogDescription>
