@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 const CTASection = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
+  const [contactPerson, setContactPerson] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [customerType, setCustomerType] = useState('private');
@@ -35,6 +36,7 @@ const CTASection = () => {
       
       // Reset form
       setName('');
+      setContactPerson('');
       setEmail('');
       setMessage('');
       setCustomerType('private');
@@ -106,6 +108,21 @@ const CTASection = () => {
                 required
               />
             </div>
+            
+            {customerType === 'company' && (
+              <div className="space-y-2">
+                <label htmlFor="contactPerson" className="block text-sm font-medium">
+                  Kontaktperson
+                </label>
+                <Input
+                  id="contactPerson"
+                  value={contactPerson}
+                  onChange={(e) => setContactPerson(e.target.value)}
+                  placeholder="Namn på kontaktperson"
+                  required
+                />
+              </div>
+            )}
             
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium">
