@@ -14,6 +14,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { Paperclip, X } from "lucide-react";
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
@@ -23,6 +25,7 @@ const CTASection = () => {
   const [message, setMessage] = useState('');
   const [customerType, setCustomerType] = useState('private');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attachments, setAttachments] = useState<File[]>([]);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -43,9 +46,21 @@ const CTASection = () => {
       setEmail('');
       setMessage('');
       setCustomerType('private');
+      setAttachments([]);
       setIsSubmitting(false);
       setOpen(false);
     }, 1000);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const fileList = Array.from(e.target.files);
+      setAttachments(prev => [...prev, ...fileList]);
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -154,6 +169,54 @@ const CTASection = () => {
                   rows={4}
                   required
                 />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="attachments" className="block text-sm font-medium">
+                  Bifoga filer
+                </label>
+                <div className="mt-1 flex items-center gap-2">
+                  <label 
+                    htmlFor="file-upload" 
+                    className="flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
+                  >
+                    <Paperclip className="h-4 w-4" />
+                    <span>Välj filer</span>
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      multiple
+                      className="sr-only"
+                      onChange={handleFileChange}
+                    />
+                  </label>
+                </div>
+                
+                {attachments.length > 0 && (
+                  <div className="mt-2 space-y-2">
+                    <p className="text-sm text-muted-foreground">Bifogade filer:</p>
+                    <ul className="space-y-2">
+                      {attachments.map((file, index) => (
+                        <li 
+                          key={`${file.name}-${index}`} 
+                          className="flex items-center justify-between rounded-md border border-input px-3 py-2 text-sm"
+                        >
+                          <span className="truncate max-w-[80%]">{file.name}</span>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => removeAttachment(index)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Ta bort</span>
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               
               <div className="flex justify-end gap-2 pt-2">
