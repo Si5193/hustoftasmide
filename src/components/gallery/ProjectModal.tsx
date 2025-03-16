@@ -31,10 +31,10 @@ const ProjectModal = ({
   
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 overflow-y-auto"
       onClick={onBackdropClick}
     >
-      <div className="relative max-h-[90vh] w-full max-w-5xl overflow-auto rounded-lg bg-white">
+      <div className="relative w-full max-w-5xl overflow-hidden rounded-lg bg-white my-auto mx-auto">
         <button 
           className="absolute right-4 top-4 z-10 rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
           onClick={onClose}
@@ -45,8 +45,8 @@ const ProjectModal = ({
           </svg>
         </button>
         
-        <div className="grid md:grid-cols-2">
-          <div className="h-72 overflow-hidden md:h-auto">
+        <div className="flex flex-col md:flex-row md:min-h-[480px]">
+          <div className="w-full md:w-1/2 h-60 sm:h-80 md:h-auto">
             {imageError[selectedProject.id] ? (
               <div className="flex h-full w-full flex-col items-center justify-center bg-metal-200 p-4">
                 <p className="text-metal-500">Bild saknas</p>
@@ -72,37 +72,39 @@ const ProjectModal = ({
             )}
           </div>
           
-          <div className="p-6 md:p-8">
-            <h3 className="mb-2 text-2xl font-bold text-metal-800">{selectedProject.title}</h3>
+          <div className="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-center">
+            <h3 className="mb-2 text-xl sm:text-2xl font-bold text-metal-800">{selectedProject.title}</h3>
             <p className="mb-4 inline-block rounded-full bg-metal-100 px-3 py-1 text-sm font-medium text-metal-600">
               {selectedProject.category}
             </p>
-            <p className="text-metal-600">{selectedProject.description}</p>
+            <p className="text-metal-600 text-sm sm:text-base">{selectedProject.description}</p>
           </div>
         </div>
         
         {/* Navigation Buttons */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 transform md:left-6">
+        <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 transform">
           <button 
-            className="rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
+            className="rounded-full bg-black/20 p-1 sm:p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
             onClick={(e) => {
               e.stopPropagation();
               onNavigate('prev');
             }}
+            aria-label="Föregående projekt"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={20} />
           </button>
         </div>
         
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 transform md:right-6">
+        <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 transform">
           <button 
-            className="rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
+            className="rounded-full bg-black/20 p-1 sm:p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
             onClick={(e) => {
               e.stopPropagation();
               onNavigate('next');
             }}
+            aria-label="Nästa projekt"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={20} />
           </button>
         </div>
       </div>
