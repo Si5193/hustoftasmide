@@ -55,7 +55,7 @@ const Hero = () => {
               src="/images/hslogo.png" 
               alt="Hustofta Smide & Mekaniska" 
               className="h-auto max-w-full" 
-              style={{ maxHeight: '120px' }}
+              style={{ maxHeight: '180px' }}
             />
           </div>
           
