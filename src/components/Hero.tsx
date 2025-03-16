@@ -1,10 +1,13 @@
 
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Hero = () => {
+  const isMobile = useIsMobile();
+  
   return (
-    <section className="relative overflow-hidden bg-metal-900 py-20 text-white md:py-28 lg:py-36">
+    <section className="relative overflow-hidden bg-metal-900 py-16 text-white md:py-24 lg:py-32">
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
         <video
@@ -36,12 +39,12 @@ const Hero = () => {
             <span className="text-metal-200">Precision</span>
           </div>
           
-          <h1 className="mb-6 bg-gradient-to-r from-white to-metal-200 bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-5xl md:text-6xl">
+          <h1 className="mb-6 bg-gradient-to-r from-white to-metal-200 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl md:text-5xl lg:text-6xl">
             Hustofta Smide <br className="hidden sm:inline" />
             & Mekaniska
           </h1>
           
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-metal-200 sm:text-xl">
+          <p className="mx-auto mb-8 md:mb-10 max-w-2xl text-base md:text-lg lg:text-xl text-metal-200">
             Vi kombinerar traditionellt hantverk med modern teknologi för att skapa hållbara lösningar i metall för både företag och privatpersoner.
           </p>
           
@@ -51,7 +54,7 @@ const Hero = () => {
               className="btn-primary group inline-flex items-center justify-center space-x-2 bg-forge-500 text-white hover:bg-forge-600"
             >
               <span>Våra tjänster</span>
-              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight size={isMobile ? 14 : 16} className="transition-transform group-hover:translate-x-1" />
             </Link>
             
             <Link

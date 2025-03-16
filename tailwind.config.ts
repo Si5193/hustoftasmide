@@ -13,9 +13,18 @@ export default {
 	theme: {
 		container: {
 			center: true,
-			padding: '2rem',
+			padding: {
+				DEFAULT: '1rem',
+				sm: '1.5rem',
+				md: '2rem',
+				lg: '3rem',
+			},
 			screens: {
-				'2xl': '1400px'
+				sm: '640px',
+				md: '768px',
+				lg: '1024px',
+				xl: '1280px',
+				'2xl': '1400px',
 			}
 		},
 		extend: {
@@ -138,7 +147,20 @@ export default {
 				'spark': 'spark 0.8s infinite',
 				'welding': 'welding 1.5s infinite',
 				'rotate-gear': 'rotate-gear 8s linear infinite'
-			}
+			},
+			screens: {
+				'xs': '420px',
+			},
+			spacing: {
+				'18': '4.5rem',
+				'72': '18rem',
+				'84': '21rem',
+				'96': '24rem',
+			},
+			maxWidth: {
+				'8xl': '88rem',
+				'9xl': '96rem',
+			},
 		}
 	},
 	plugins: [require("tailwindcss-animate")],

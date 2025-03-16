@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Project } from '../sections/ProjectsSection';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProjectCardProps {
   project: Project;
@@ -22,6 +23,8 @@ const ProjectCard = ({
   onImageError,
   onImageLoad
 }: ProjectCardProps) => {
+  const isMobile = useIsMobile();
+  
   return (
     <div 
       key={project.id}
@@ -38,7 +41,7 @@ const ProjectCard = ({
           <div className="relative h-full w-full">
             {!imagesLoaded[project.id] && (
               <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
+                <div className="h-6 w-6 md:h-8 md:w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
               </div>
             )}
             <img
@@ -54,14 +57,14 @@ const ProjectCard = ({
         )}
       </div>
       
-      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-4 md:p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <div className="translate-y-4 transform transition-transform duration-300 group-hover:translate-y-0">
-          <h3 className="mb-1 text-xl font-semibold text-white">{project.title}</h3>
-          <p className="text-sm text-metal-200">{project.category}</p>
+          <h3 className="mb-1 text-base md:text-xl font-semibold text-white">{project.title}</h3>
+          <p className="text-xs md:text-sm text-metal-200">{project.category}</p>
         </div>
         
-        <div className="absolute right-4 top-4 rounded-full bg-white/10 p-2 backdrop-blur-sm">
-          <Plus className="text-white" size={20} />
+        <div className="absolute right-3 top-3 md:right-4 md:top-4 rounded-full bg-white/10 p-1.5 md:p-2 backdrop-blur-sm">
+          <Plus className="text-white" size={isMobile ? 16 : 20} />
         </div>
       </div>
     </div>
