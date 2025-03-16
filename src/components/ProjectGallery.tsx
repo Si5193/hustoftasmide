@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Project {
   id: number;
@@ -21,6 +22,19 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [imageError, setImageError] = useState<Record<number, boolean>>({});
   const [imagesLoaded, setImagesLoaded] = useState<Record<number, boolean>>({});
+  const { toast } = useToast();
+
+  // För att visa om det är problem med bilderna
+  useEffect(() => {
+    const errors = Object.keys(imageError).length;
+    if (errors > 0) {
+      toast({
+        title: `${errors} bilder kunde inte laddas`,
+        description: "Kontrollera att bilderna finns i rätt mapp och har rätt filnamn.",
+        variant: "destructive",
+      });
+    }
+  }, [imageError, toast]);
 
   useEffect(() => {
     // Reset image states when projects change
@@ -88,9 +102,9 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
             >
               <div className="aspect-[4/3] overflow-hidden">
                 {imageError[project.id] ? (
-                  <div className="flex h-full w-full items-center justify-center bg-metal-200">
+                  <div className="flex flex-col h-full w-full items-center justify-center bg-metal-200 p-4">
                     <p className="text-metal-500">Bild saknas</p>
-                    <p className="text-xs text-metal-400 mt-1">{project.image}</p>
+                    <p className="text-xs text-metal-400 mt-1 text-center break-all">{project.image}</p>
                   </div>
                 ) : (
                   <div className="relative h-full w-full">
