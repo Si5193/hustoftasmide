@@ -56,9 +56,13 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
           </div>
         </div>
         
-        <h1 className="mb-8 font-heading text-3xl font-bold text-primary-foreground">
-          Hustofta Smide & Mekaniska
-        </h1>
+        <div className="mb-8">
+          <img 
+            src="/images/hslogo.png" 
+            alt="Hustofta Smide & Mekaniska" 
+            className="max-h-[120px] w-auto"
+          />
+        </div>
         
         <div className="relative h-1 w-64 overflow-hidden rounded-full bg-metal-700">
           <div 
