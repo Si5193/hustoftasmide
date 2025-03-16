@@ -28,7 +28,7 @@ const ProjectCard = ({
       className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg"
       onClick={() => onOpenProject(project, index)}
     >
-      <div className="aspect-[4/3] overflow-hidden">
+      <div className="aspect-square sm:aspect-[4/3] overflow-hidden">
         {imageError[project.id] ? (
           <div className="flex flex-col h-full w-full items-center justify-center bg-metal-200 p-4">
             <p className="text-metal-500">Bild saknas</p>

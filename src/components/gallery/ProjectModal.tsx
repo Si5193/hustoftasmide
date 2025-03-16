@@ -34,7 +34,7 @@ const ProjectModal = ({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 overflow-y-auto"
       onClick={onBackdropClick}
     >
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-lg bg-white my-auto mx-auto">
+      <div className="relative w-full max-w-4xl overflow-hidden rounded-lg bg-white my-auto mx-auto">
         <button 
           className="absolute right-4 top-4 z-10 rounded-full bg-black/20 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/40"
           onClick={onClose}
@@ -45,8 +45,8 @@ const ProjectModal = ({
           </svg>
         </button>
         
-        <div className="flex flex-col md:flex-row md:min-h-[480px]">
-          <div className="w-full md:w-1/2 h-60 sm:h-80 md:h-auto">
+        <div className="flex flex-col md:flex-row">
+          <div className="w-full md:w-1/2 h-52 sm:h-60 md:h-72">
             {imageError[selectedProject.id] ? (
               <div className="flex h-full w-full flex-col items-center justify-center bg-metal-200 p-4">
                 <p className="text-metal-500">Bild saknas</p>
@@ -62,7 +62,7 @@ const ProjectModal = ({
                 <img 
                   src={selectedProject.image} 
                   alt={selectedProject.title}
-                  className={`h-full w-full object-cover ${
+                  className={`h-full w-full object-contain ${
                     imagesLoaded[selectedProject.id] ? 'opacity-100' : 'opacity-0'
                   }`}
                   onError={() => onImageError(selectedProject.id)}
