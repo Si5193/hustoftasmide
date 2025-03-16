@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 
 interface Project {
@@ -20,6 +20,13 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [imageError, setImageError] = useState<Record<number, boolean>>({});
+  const [imagesLoaded, setImagesLoaded] = useState<Record<number, boolean>>({});
+
+  useEffect(() => {
+    // Reset image states when projects change
+    setImageError({});
+    setImagesLoaded({});
+  }, [projects]);
 
   const openProject = (project: Project, index: number) => {
     setSelectedProject(project);
@@ -53,7 +60,13 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
 
   // Handle image loading error
   const handleImageError = (projectId: number) => {
+    console.error(`Failed to load image for project ${projectId}`);
     setImageError(prev => ({ ...prev, [projectId]: true }));
+  };
+
+  // Handle image loading success
+  const handleImageLoad = (projectId: number) => {
+    setImagesLoaded(prev => ({ ...prev, [projectId]: true }));
   };
 
   return (
@@ -77,14 +90,25 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
                 {imageError[project.id] ? (
                   <div className="flex h-full w-full items-center justify-center bg-metal-200">
                     <p className="text-metal-500">Bild saknas</p>
+                    <p className="text-xs text-metal-400 mt-1">{project.image}</p>
                   </div>
                 ) : (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                    onError={() => handleImageError(project.id)}
-                  />
+                  <div className="relative h-full w-full">
+                    {!imagesLoaded[project.id] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
+                      </div>
+                    )}
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
+                        imagesLoaded[project.id] ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      onError={() => handleImageError(project.id)}
+                      onLoad={() => handleImageLoad(project.id)}
+                    />
+                  </div>
                 )}
               </div>
               
@@ -123,16 +147,27 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
             <div className="grid md:grid-cols-2">
               <div className="h-72 overflow-hidden md:h-auto">
                 {imageError[selectedProject.id] ? (
-                  <div className="flex h-full w-full items-center justify-center bg-metal-200">
+                  <div className="flex h-full w-full flex-col items-center justify-center bg-metal-200 p-4">
                     <p className="text-metal-500">Bild saknas</p>
+                    <p className="text-xs text-metal-400 mt-1 text-center break-all">{selectedProject.image}</p>
                   </div>
                 ) : (
-                  <img 
-                    src={selectedProject.image} 
-                    alt={selectedProject.title}
-                    className="h-full w-full object-cover"
-                    onError={() => handleImageError(selectedProject.id)}
-                  />
+                  <div className="relative h-full w-full">
+                    {!imagesLoaded[selectedProject.id] && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
+                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
+                      </div>
+                    )}
+                    <img 
+                      src={selectedProject.image} 
+                      alt={selectedProject.title}
+                      className={`h-full w-full object-cover ${
+                        imagesLoaded[selectedProject.id] ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      onError={() => handleImageError(selectedProject.id)}
+                      onLoad={() => handleImageLoad(selectedProject.id)}
+                    />
+                  </div>
                 )}
               </div>
               
