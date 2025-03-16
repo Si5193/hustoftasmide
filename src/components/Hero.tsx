@@ -6,6 +6,17 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const Hero = () => {
   const isMobile = useIsMobile();
   
+  // Function to handle scrolling to a section
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80, // Adjust for header height
+        behavior: 'smooth'
+      });
+    }
+  };
+  
   return (
     <section className="relative overflow-hidden bg-metal-900 py-16 text-white md:py-24 lg:py-32">
       {/* Video Background */}
@@ -57,12 +68,12 @@ const Hero = () => {
               <ArrowRight size={isMobile ? 14 : 16} className="transition-transform group-hover:translate-x-1" />
             </Link>
             
-            <Link
-              to="/projects"
+            <button
+              onClick={() => scrollToSection('projects')}
               className="btn-outline border-metal-600 text-forge-500 hover:bg-metal-800"
             >
               Se våra projekt
-            </Link>
+            </button>
           </div>
         </div>
       </div>
