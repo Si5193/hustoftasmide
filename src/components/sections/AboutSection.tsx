@@ -16,9 +16,7 @@ const AboutSection = () => {
             <div className="inline-block rounded-full bg-forge-500/10 px-4 py-1.5 text-sm font-medium text-forge-600">
               Om oss
             </div>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-metal-800 md:text-4xl">
-              Tradition och kvalitet sedan 1985
-            </h2>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-metal-800 md:text-4xl">Tradition och kvalitet</h2>
             <p className="mt-4 text-lg text-metal-600">
               Hustofta Smide & Mekaniska grundades med en passion för hantverk och ett engagemang för kvalitet. Med över 35 års erfarenhet i branschen har vi utvecklat en djup förståelse för metallbearbetning och kundernas behov.
             </p>
