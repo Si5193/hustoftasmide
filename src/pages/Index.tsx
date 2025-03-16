@@ -96,10 +96,10 @@ const projects: Project[] = [
   },
   {
     id: 13,
-    title: 'Specialanpassat trappräcke',
-    description: 'Elegant svart trappräcke med dekorativa stolpar, skräddarsytt för att passa en klassisk interiör. Förenar hantverksskicklighet med praktisk funktion.',
+    title: 'Specialanpassad trappa',
+    description: 'Unik trappa tillverkad i aluminium och betsad limträ. Skräddarsydd design som kombinerar modern elegans med robust konstruktion, perfekt för både inomhus- och utomhusmiljöer.',
     category: 'Privatperson',
-    image: '/images/specialanpassat-trappracke.jpg',
+    image: '/images/specialanpassad-trappa.jpg',
   },
   {
     id: 14,
