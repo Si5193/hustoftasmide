@@ -64,13 +64,13 @@ const Hero = () => {
           </p>
           
           <div className="flex flex-col justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-            <Link
-              to="/services"
+            <button
+              onClick={() => scrollToSection('services')}
               className="btn-primary group inline-flex items-center justify-center space-x-2 bg-forge-500 text-white hover:bg-forge-600"
             >
               <span>Våra tjänster</span>
               <ArrowRight size={isMobile ? 14 : 16} className="transition-transform group-hover:translate-x-1" />
-            </Link>
+            </button>
             
             <button
               onClick={() => scrollToSection('projects')}
