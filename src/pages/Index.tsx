@@ -60,11 +60,25 @@ const projects: Project[] = [
     image: '/images/stalkonsol.jpg',
   },
   {
+    id: 10,
+    title: 'Industriella behållare',
+    description: 'Specialtillverkade metallbehållare för industriell användning. Robusta och funktionella för att möta specifika produktionskrav.',
+    category: 'Företag',
+    image: '/images/industriella-behallare.jpg',
+  },
+  {
     id: 13,
     title: 'Specialanpassad trappa',
     description: 'Unik trappa tillverkad i aluminium och betsad limträ. Skräddarsydd design som kombinerar modern elegans med robust konstruktion, perfekt för både inomhus- och utomhusmiljöer.',
     category: 'Privatperson',
     image: '/images/specialanpassad-trappa.jpg',
+  },
+  {
+    id: 14,
+    title: 'Metallbearbetning',
+    description: 'Precision i metallbearbetning med hög detaljnivå. Visar vår tekniska kompetens och möjlighet att skapa specialanpassade metallkomponenter.',
+    category: 'Företag',
+    image: '/images/metallbearbetning.jpg',
   }
 ];
 
