@@ -1,6 +1,5 @@
 
 import { Hammer, Wrench, Cog, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import ServiceCard from '../ServiceCard';
 import { Button } from '@/components/ui/button';
 
@@ -46,15 +45,6 @@ const ServicesSection = () => {
             fullDescription="Vår konsultationstjänst ger dig tillgång till vår expertis inom metallbearbetning och smide. Vi erbjuder professionell rådgivning gällande materialval, design och praktiska lösningar. Genom att involvera oss tidigt i ditt projekt kan vi hjälpa dig optimera både funktion och kostnader."
             delay={400}
           />
-        </div>
-        
-        <div className="mt-12 text-center">
-          <Link 
-            to="/services" 
-            className="btn-primary bg-metal-800 hover:bg-metal-700"
-          >
-            Se alla tjänster
-          </Link>
         </div>
       </div>
     </section>
