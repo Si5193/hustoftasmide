@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
@@ -69,7 +70,7 @@ const CTASection = () => {
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>Kontakta oss</DialogTitle>
             <DialogDescription>
@@ -77,98 +78,100 @@ const CTASection = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            <div className="space-y-3">
-              <Label>Jag kontaktar som:</Label>
-              <RadioGroup 
-                value={customerType} 
-                onValueChange={setCustomerType}
-                className="flex space-x-6"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="private" id="private" />
-                  <Label htmlFor="private" className="cursor-pointer">Privatperson</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="company" id="company" />
-                  <Label htmlFor="company" className="cursor-pointer">Företag</Label>
-                </div>
-              </RadioGroup>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-medium">
-                {customerType === 'company' ? 'Företagsnamn' : 'Namn'}
-              </label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={customerType === 'company' ? 'Företagets namn' : 'Ditt namn'}
-                required
-              />
-            </div>
-            
-            {customerType === 'company' && (
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+              <div className="space-y-3">
+                <Label>Jag kontaktar som:</Label>
+                <RadioGroup 
+                  value={customerType} 
+                  onValueChange={setCustomerType}
+                  className="flex space-x-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="private" id="private" />
+                    <Label htmlFor="private" className="cursor-pointer">Privatperson</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="company" id="company" />
+                    <Label htmlFor="company" className="cursor-pointer">Företag</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
               <div className="space-y-2">
-                <label htmlFor="contactPerson" className="block text-sm font-medium">
-                  Kontaktperson
+                <label htmlFor="name" className="block text-sm font-medium">
+                  {customerType === 'company' ? 'Företagsnamn' : 'Namn'}
                 </label>
                 <Input
-                  id="contactPerson"
-                  value={contactPerson}
-                  onChange={(e) => setContactPerson(e.target.value)}
-                  placeholder="Namn på kontaktperson"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={customerType === 'company' ? 'Företagets namn' : 'Ditt namn'}
                   required
                 />
               </div>
-            )}
-            
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium">
-                E-post
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="din.epost@exempel.se"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="message" className="block text-sm font-medium">
-                Meddelande
-              </label>
-              <Textarea
-                id="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Beskriv ditt projekt eller fråga"
-                rows={4}
-                required
-              />
-            </div>
-            
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
-              >
-                Avbryt
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="rounded bg-forge-500 px-4 py-2 text-white hover:bg-forge-600 disabled:opacity-70"
-              >
-                {isSubmitting ? 'Skickar...' : 'Skicka'}
-              </button>
-            </div>
-          </form>
+              
+              {customerType === 'company' && (
+                <div className="space-y-2">
+                  <label htmlFor="contactPerson" className="block text-sm font-medium">
+                    Kontaktperson
+                  </label>
+                  <Input
+                    id="contactPerson"
+                    value={contactPerson}
+                    onChange={(e) => setContactPerson(e.target.value)}
+                    placeholder="Namn på kontaktperson"
+                    required
+                  />
+                </div>
+              )}
+              
+              <div className="space-y-2">
+                <label htmlFor="email" className="block text-sm font-medium">
+                  E-post
+                </label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="din.epost@exempel.se"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label htmlFor="message" className="block text-sm font-medium">
+                  Meddelande
+                </label>
+                <Textarea
+                  id="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Beskriv ditt projekt eller fråga"
+                  rows={4}
+                  required
+                />
+              </div>
+              
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+                >
+                  Avbryt
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="rounded bg-forge-500 px-4 py-2 text-white hover:bg-forge-600 disabled:opacity-70"
+                >
+                  {isSubmitting ? 'Skickar...' : 'Skicka'}
+                </button>
+              </div>
+            </form>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </>
