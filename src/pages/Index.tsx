@@ -8,7 +8,7 @@ import ProjectsSection from '../components/sections/ProjectsSection';
 import CTASection from '../components/sections/CTASection';
 import { Project } from '../components/sections/ProjectsSection';
 
-// Updated project data with fixed image paths
+// Project data with properly formatted image paths
 const projects: Project[] = [
   {
     id: 1,

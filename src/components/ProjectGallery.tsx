@@ -19,6 +19,7 @@ interface ProjectGalleryProps {
 const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [imageError, setImageError] = useState<Record<number, boolean>>({});
 
   const openProject = (project: Project, index: number) => {
     setSelectedProject(project);
@@ -50,6 +51,11 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
     }
   };
 
+  // Handle image loading error
+  const handleImageError = (projectId: number) => {
+    setImageError(prev => ({ ...prev, [projectId]: true }));
+  };
+
   return (
     <section className="py-12 md:py-16 bg-background">
       {(title || subtitle) && (
@@ -68,11 +74,18 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
               onClick={() => openProject(project, index)}
             >
               <div className="aspect-[4/3] overflow-hidden">
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
+                {imageError[project.id] ? (
+                  <div className="flex h-full w-full items-center justify-center bg-metal-200">
+                    <p className="text-metal-500">Bild saknas</p>
+                  </div>
+                ) : (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    onError={() => handleImageError(project.id)}
+                  />
+                )}
               </div>
               
               <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -109,11 +122,18 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
             
             <div className="grid md:grid-cols-2">
               <div className="h-72 overflow-hidden md:h-auto">
-                <img 
-                  src={selectedProject.image} 
-                  alt={selectedProject.title}
-                  className="h-full w-full object-cover"
-                />
+                {imageError[selectedProject.id] ? (
+                  <div className="flex h-full w-full items-center justify-center bg-metal-200">
+                    <p className="text-metal-500">Bild saknas</p>
+                  </div>
+                ) : (
+                  <img 
+                    src={selectedProject.image} 
+                    alt={selectedProject.title}
+                    className="h-full w-full object-cover"
+                    onError={() => handleImageError(selectedProject.id)}
+                  />
+                )}
               </div>
               
               <div className="p-6 md:p-8">
