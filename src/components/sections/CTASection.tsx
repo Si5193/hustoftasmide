@@ -10,12 +10,15 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [customerType, setCustomerType] = useState('private');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
@@ -34,6 +37,7 @@ const CTASection = () => {
       setName('');
       setEmail('');
       setMessage('');
+      setCustomerType('private');
       setIsSubmitting(false);
       setOpen(false);
     }, 1000);
@@ -72,15 +76,33 @@ const CTASection = () => {
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+            <div className="space-y-3">
+              <Label>Jag kontaktar som:</Label>
+              <RadioGroup 
+                value={customerType} 
+                onValueChange={setCustomerType}
+                className="flex space-x-6"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="private" id="private" />
+                  <Label htmlFor="private" className="cursor-pointer">Privatperson</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="company" id="company" />
+                  <Label htmlFor="company" className="cursor-pointer">Företag</Label>
+                </div>
+              </RadioGroup>
+            </div>
+            
             <div className="space-y-2">
               <label htmlFor="name" className="block text-sm font-medium">
-                Namn
+                {customerType === 'company' ? 'Företagsnamn' : 'Namn'}
               </label>
               <Input
                 id="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ditt namn"
+                placeholder={customerType === 'company' ? 'Företagets namn' : 'Ditt namn'}
                 required
               />
             </div>
