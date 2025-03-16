@@ -1,3 +1,4 @@
+
 import { Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -9,8 +10,8 @@ const AboutSection = () => {
           <div className="relative">
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-xl">
               <img 
-                src="https://images.unsplash.com/photo-1564540574859-0dfb63985953?q=80&w=1170&auto=format&fit=crop" 
-                alt="Svetsning" 
+                src="/images/hustofta.jpg" 
+                alt="Hustofta Smide" 
                 className="h-full w-full object-cover"
               />
             </div>
