@@ -22,14 +22,14 @@ const projects: Project[] = [
     title: 'Trädgårdsgrind',
     description: 'Vacker grind i smide med dekorativa detaljer, tillverkad för en trädgårdsingång. Kombinerar säkerhet med en attraktiv design.',
     category: 'Privatperson',
-    image: '/images/tradgardsgrind.jpg',
+    image: '/images/tragardsgrind.jpg', // Confirm this is the correct filename
   },
   {
     id: 3,
     title: 'Dekorativ metallgrind',
     description: 'Konstnärligt utformad grind i smide med stilfulla detaljer och mönster, skräddarsydd för att skapa en inbjudande entré till trädgården.',
     category: 'Privatperson',
-    image: '/images/dekorativ-metallgrind.jpg',
+    image: '/images/dekorativ-metallgrind.jpg', // Confirm this is the correct filename
   },
   {
     id: 4,
@@ -50,7 +50,7 @@ const projects: Project[] = [
     title: 'Trappräcke i svart smide',
     description: 'Modernt trappräcke med glaspartier, specialtillverkat för en luftig och elegant inomhusmiljö. Kombinerar säkerhet med en minimalistisk design.',
     category: 'Privatperson',
-    image: '/images/trappracke-svart.jpg',
+    image: '/images/trappracke-svart.jpg', // Confirm this is the correct filename
   },
   {
     id: 7,
@@ -64,14 +64,14 @@ const projects: Project[] = [
     title: 'Räcke till entré',
     description: 'Enkelt men elegant entréräcke i svart metall, designat för att ge stöd och säkerhet vid yttertrappor. Praktisk och stilren design.',
     category: 'Privatperson',
-    image: '/images/racke-entre.jpg',
+    image: '/images/entrace-racke.jpg', // Updated filename
   },
   {
     id: 9,
     title: 'Industriell rördel',
     description: 'Precisionssvetsad industriell rördel i stål, anpassad för specifika tekniska krav. Tillverkad för att klara krävande industriella miljöer.',
     category: 'Företag',
-    image: '/images/industriell-rordel.jpg',
+    image: '/images/ror-delar.jpg', // Updated filename
   },
   {
     id: 10,
@@ -85,14 +85,14 @@ const projects: Project[] = [
     title: 'Precisionskomponent',
     description: 'Bearbetad metallkomponent med hög precision för industriellt bruk. Tillverkad enligt exakta specifikationer för optimal funktionalitet.',
     category: 'Företag',
-    image: '/images/precisionskomponent.jpg',
+    image: '/images/precisions-komponent.jpg', // Updated filename
   },
   {
     id: 12,
     title: 'Industriell rörkonstruktion',
     description: 'Robust rörkonstruktion i stål för industriella applikationer. Designad och tillverkad för att möta höga krav på hållbarhet och prestanda.',
     category: 'Företag',
-    image: '/images/industriell-rorkonstruktion.jpg',
+    image: '/images/industrial-pipe.jpg', // Updated filename
   },
   {
     id: 13,
@@ -106,21 +106,21 @@ const projects: Project[] = [
     title: 'Metallbearbetning',
     description: 'Precision i metallbearbetning med hög detaljnivå. Visar vår tekniska kompetens och möjlighet att skapa specialanpassade metallkomponenter.',
     category: 'Företag',
-    image: '/images/metallbearbetning.jpg',
+    image: '/images/metalwork.jpg', // Updated filename
   },
   {
     id: 15,
     title: 'Svetsad stålkomponent',
     description: 'Avancerad svetsad stålkomponent för industriella applikationer. Tillverkad med fokus på precision och hållbarhet för krävande användningsområden.',
     category: 'Företag',
-    image: '/images/svetsad-stalkomponent.jpg',
+    image: '/images/welded-steel.jpg', // Updated filename
   },
   {
     id: 16,
     title: 'Svart smidesräcke',
     description: 'Klassiskt svart smidesräcke för inomhusbruk. Handtillverkat med traditionella metoder och ett öga för detaljer som ger karaktär till hemmet.',
     category: 'Privatperson',
-    image: '/images/svart-smidesracke.jpg',
+    image: '/images/black-railing.jpg', // Updated filename
   },
 ];
 
