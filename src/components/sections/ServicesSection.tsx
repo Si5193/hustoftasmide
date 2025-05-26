@@ -28,7 +28,7 @@ const ServicesSection = () => {
             title="Metallbearbetning"
             description="Professionell metallbearbetning med hög precision för industri och verkstad."
             icon={<Wrench size={24} />}
-            fullDescription="Vår metallbearbetning levererar precisionsresultat för industri, verkstad och privatpersoner. Med modern utrustning och erfarna yrkesmän erbjuder vi skärning, bockning, svetsning och annan bearbetning i olika metaller och dimensioner. Vi står för kvalitet i varje detalj."
+            fullDescription="Vi levererar precisionslösningar för industri, verkstad och privatpersoner. Med modern utrustning erbjuder vi skärning, bockning, svetsning och annan bearbetning i olika metaller och dimensioner. Vi står för kvalitet i varje detalj."
             delay={200}
           />
           <ServiceCard
