@@ -1,6 +1,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Project } from '../sections/ProjectsSection';
+import ShareButton from '../ui/share-button';
 
 interface ProjectModalProps {
   selectedProject: Project | null;
@@ -77,7 +78,16 @@ const ProjectModal = ({
             <p className="mb-4 inline-block rounded-full bg-metal-100 px-3 py-1 text-sm font-medium text-metal-600">
               {selectedProject.category}
             </p>
-            <p className="text-metal-600 text-sm sm:text-base">{selectedProject.description}</p>
+            <p className="text-metal-600 text-sm sm:text-base mb-6">{selectedProject.description}</p>
+            
+            {/* Share Button */}
+            <div className="flex justify-start">
+              <ShareButton
+                title={selectedProject.title}
+                description={selectedProject.description}
+                imageUrl={selectedProject.image}
+              />
+            </div>
           </div>
         </div>
         
