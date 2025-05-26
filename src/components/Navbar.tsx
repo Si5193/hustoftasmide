@@ -12,7 +12,7 @@ const Navbar = () => {
   // Check for admin access on double-click of logo
   const [clickCount, setClickCount] = useState(0);
   
-  const handleLogoClick = (e: React.MouseEvent) => {
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setClickCount(prev => prev + 1);
     
