@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Hammer, Menu, X, Settings } from 'lucide-react';
+import { Hammer, Menu, X, Settings, Phone } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +22,10 @@ const Navbar = () => {
     }
     
     scrollToSection(e, 'top');
+  };
+
+  const handleCallClick = () => {
+    window.location.href = 'tel:076-1072796';
   };
 
   const toggleMenu = () => {
@@ -132,6 +135,26 @@ const Navbar = () => {
           </ul>
         </nav>
 
+        {/* Call Button */}
+        <button 
+          onClick={handleCallClick}
+          className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+            scrolled 
+              ? 'bg-forge-500 text-white hover:bg-forge-600' 
+              : 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20'
+          }`}
+        >
+          <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/20">
+            <img 
+              src="/images/hustofta.jpg" 
+              alt="Alexander" 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <span className="text-sm font-medium">Ring mig</span>
+          <Phone size={16} />
+        </button>
+
         {/* Mobile Menu Button */}
         <button className={`flex md:hidden ${scrolled ? 'text-forge-500' : 'text-white'}`} onClick={toggleMenu} aria-label={isOpen ? 'Close menu' : 'Open menu'}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -168,6 +191,22 @@ const Navbar = () => {
                   </Link>
                 </li>
               )}
+              <li>
+                <button 
+                  onClick={handleCallClick}
+                  className="flex items-center gap-3 text-3xl font-medium text-foreground bg-forge-500 text-white px-6 py-3 rounded-lg w-full justify-center"
+                >
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20">
+                    <img 
+                      src="/images/hustofta.jpg" 
+                      alt="Alexander" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  Ring mig
+                  <Phone size={32} />
+                </button>
+              </li>
             </ul>
           </nav>
           
