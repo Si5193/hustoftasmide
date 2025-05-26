@@ -1,4 +1,3 @@
-
 import { Hammer, Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
@@ -88,7 +87,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <Phone size={18} className="mr-3 mt-0.5 text-forge-500" />
-                <span className="text-metal-200">+46 123 456 789</span>
+                <span className="text-metal-200">076-1072796</span>
               </li>
               <li className="flex items-start">
                 <Mail size={18} className="mr-3 mt-0.5 text-forge-500" />
@@ -96,7 +95,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <MapPin size={18} className="mr-3 mt-0.5 text-forge-500" />
-                <span className="text-metal-200">Smidesvägen 1, 123 45 Hustofta</span>
+                <span className="text-metal-200">Ornakärrsvägen 49, 26395 Höganäs</span>
               </li>
             </ul>
           </div>
