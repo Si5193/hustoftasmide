@@ -1,10 +1,30 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Hammer, Menu, X } from 'lucide-react';
+import { Hammer, Menu, X, Settings } from 'lucide-react';
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showAdminLink, setShowAdminLink] = useState(false);
   const location = useLocation();
+
+  // Check for admin access on double-click of logo
+  const [clickCount, setClickCount] = useState(0);
+  
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setClickCount(prev => prev + 1);
+    
+    setTimeout(() => setClickCount(0), 500); // Reset after 500ms
+    
+    if (clickCount === 1) { // This will be the second click
+      setShowAdminLink(prev => !prev);
+    }
+    
+    scrollToSection(e, 'top');
+  };
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
@@ -13,10 +33,12 @@ const Navbar = () => {
       document.body.style.overflow = 'auto';
     }
   };
+
   const closeMenu = () => {
     setIsOpen(false);
     document.body.style.overflow = 'auto';
   };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -30,9 +52,11 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
   useEffect(() => {
     closeMenu();
   }, [location.pathname]);
+
   const navLinks = [{
     name: 'Hem',
     path: '#',
@@ -54,6 +78,7 @@ const Navbar = () => {
     path: '#contact',
     section: 'contact'
   }];
+
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
     closeMenu();
@@ -69,19 +94,19 @@ const Navbar = () => {
       const offsetTop = element.offsetTop;
       window.scrollTo({
         top: offsetTop - 80,
-        // Adjust for header height
         behavior: 'smooth'
       });
     }
   };
+
   const isActive = (section: string) => {
-    // Placeholder for active section logic based on scroll position
-    // This can be enhanced with IntersectionObserver for more accurate tracking
     return false;
   };
-  return <header className={`fixed left-0 top-0 z-40 w-full transition-all duration-300 ${scrolled ? 'bg-background/90 py-3 shadow-md backdrop-blur-md' : 'bg-transparent py-4'}`}>
+
+  return (
+    <header className={`fixed left-0 top-0 z-40 w-full transition-all duration-300 ${scrolled ? 'bg-background/90 py-3 shadow-md backdrop-blur-md' : 'bg-transparent py-4'}`}>
       <div className="container flex items-center justify-between px-4 md:px-6">
-        <a href="#" onClick={e => scrollToSection(e, 'top')} className={`flex items-center space-x-2 transition-colors ${scrolled ? 'text-forge-500' : 'text-white'}`}>
+        <a href="#" onClick={handleLogoClick} className={`flex items-center space-x-2 transition-colors ${scrolled ? 'text-forge-500' : 'text-white'}`}>
           <Hammer className="text-forge-500" size={28} />
           <span className="text-xl font-bold tracking-tight md:text-base">Hustofta smide &amp; mekaniska</span>
         </a>
@@ -89,11 +114,21 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:block">
           <ul className="flex items-center space-x-6">
-            {navLinks.map(link => <li key={link.section}>
+            {navLinks.map(link => (
+              <li key={link.section}>
                 <a href={link.path} onClick={e => scrollToSection(e, link.section)} className={`hover-link px-1 py-2 text-sm font-medium transition-colors ${isActive(link.section) ? 'text-forge-500' : scrolled ? 'text-forge-500 hover:text-forge-600' : 'text-white hover:text-forge-500'}`}>
                   {link.name}
                 </a>
-              </li>)}
+              </li>
+            ))}
+            {showAdminLink && (
+              <li>
+                <Link to="/admin" className={`hover-link px-1 py-2 text-sm font-medium transition-colors flex items-center gap-1 ${scrolled ? 'text-forge-500 hover:text-forge-600' : 'text-white hover:text-forge-500'}`}>
+                  <Settings size={16} />
+                  Admin
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 
@@ -118,11 +153,21 @@ const Navbar = () => {
           
           <nav className="flex-1 py-8">
             <ul className="flex flex-col space-y-6">
-              {navLinks.map(link => <li key={link.section}>
+              {navLinks.map(link => (
+                <li key={link.section}>
                   <a href={link.path} onClick={e => scrollToSection(e, link.section)} className={`text-3xl font-medium ${isActive(link.section) ? 'text-forge-500' : 'text-foreground'}`}>
                     {link.name}
                   </a>
-                </li>)}
+                </li>
+              ))}
+              {showAdminLink && (
+                <li>
+                  <Link to="/admin" className="text-3xl font-medium text-foreground flex items-center gap-2">
+                    <Settings size={32} />
+                    Admin
+                  </Link>
+                </li>
+              )}
             </ul>
           </nav>
           
@@ -133,6 +178,8 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Navbar;
