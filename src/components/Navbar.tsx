@@ -135,24 +135,24 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        {/* Call Button */}
+        {/* Optimized Call Button */}
         <button 
           onClick={handleCallClick}
-          className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+          className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-300 ${
             scrolled 
               ? 'bg-forge-500 text-white hover:bg-forge-600' 
               : 'bg-white/10 backdrop-blur-sm text-white hover:bg-white/20'
           }`}
         >
-          <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/20">
+          <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20">
             <img 
               src="/images/hustofta.jpg" 
               alt="Alexander" 
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="text-sm font-medium">Ring mig</span>
-          <Phone size={16} />
+          <span className="text-xs font-medium">Ring mig</span>
+          <Phone size={14} />
         </button>
 
         {/* Mobile Menu Button */}
@@ -194,9 +194,9 @@ const Navbar = () => {
               <li>
                 <button 
                   onClick={handleCallClick}
-                  className="flex items-center gap-3 text-3xl font-medium text-foreground bg-forge-500 text-white px-6 py-3 rounded-lg w-full justify-center"
+                  className="flex items-center gap-3 text-2xl font-medium text-white bg-forge-500 hover:bg-forge-600 px-4 py-2 rounded-lg w-full justify-center transition-colors"
                 >
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20">
                     <img 
                       src="/images/hustofta.jpg" 
                       alt="Alexander" 
@@ -204,7 +204,7 @@ const Navbar = () => {
                     />
                   </div>
                   Ring mig
-                  <Phone size={32} />
+                  <Phone size={24} />
                 </button>
               </li>
             </ul>
