@@ -52,7 +52,7 @@ const Layout = ({ children }: LayoutProps) => {
       
       <Navbar />
       
-      <main className={`flex-1 w-full transition-opacity duration-500 ${loading ? 'opacity-0' : 'opacity-100'}`}>
+      <main className={`flex-1 w-full pt-16 md:pt-20 transition-opacity duration-500 ${loading ? 'opacity-0' : 'opacity-100'}`}>
         {children}
       </main>
       
