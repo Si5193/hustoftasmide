@@ -7,7 +7,6 @@ import {
   DialogHeader, 
   DialogTitle 
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -16,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Paperclip, X } from "lucide-react";
+import { useContactEmail } from "@/hooks/useContactEmail";
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
@@ -24,22 +24,25 @@ const CTASection = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [customerType, setCustomerType] = useState('private');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
-  const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { sendContactEmail, isSubmitting } = useContactEmail();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
-      toast({
-        title: "Meddelande skickat!",
-        description: "Vi återkommer till dig så snart som möjligt.",
-      });
-      
+    const formData = {
+      name,
+      contactPerson,
+      email,
+      message,
+      customerType,
+      attachments
+    };
+
+    const result = await sendContactEmail(formData);
+    
+    if (result.success) {
       // Reset form
       setName('');
       setContactPerson('');
@@ -47,9 +50,8 @@ const CTASection = () => {
       setMessage('');
       setCustomerType('private');
       setAttachments([]);
-      setIsSubmitting(false);
       setOpen(false);
-    }, 1000);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
