@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from './use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ContactFormData {
   name: string;
@@ -19,29 +20,36 @@ export const useContactEmail = () => {
     setIsSubmitting(true);
     
     try {
-      // For now, we'll prepare the data for the Edge Function
-      const emailData = {
+      console.log('Sending contact email with data:', {
         name: formData.name,
         contactPerson: formData.contactPerson,
         email: formData.email,
-        message: formData.message,
         customerType: formData.customerType,
-        attachments: formData.attachments.map(file => ({
-          name: file.name,
-          size: file.size,
-          type: file.type
-        }))
-      };
+        attachmentsCount: formData.attachments.length
+      });
 
-      // TODO: Replace this with actual Supabase Edge Function call
-      // const { data, error } = await supabase.functions.invoke('send-contact-email', {
-      //   body: emailData
-      // });
+      // Call the Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: formData.name,
+          contactPerson: formData.contactPerson,
+          email: formData.email,
+          message: formData.message,
+          customerType: formData.customerType,
+          attachments: formData.attachments.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type
+          }))
+        }
+      });
 
-      // Simulate the API call for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Email data prepared:', emailData);
+      if (error) {
+        console.error('Error from Edge Function:', error);
+        throw error;
+      }
+
+      console.log('Email sent successfully:', data);
       
       toast({
         title: "Meddelande skickat!",
