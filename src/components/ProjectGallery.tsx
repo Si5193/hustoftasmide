@@ -36,16 +36,16 @@ const ProjectGallery = ({ projects, title, subtitle }: ProjectGalleryProps) => {
   } = useProjectNavigation(projects);
 
   return (
-    <section className="py-12 md:py-16 bg-background">
+    <section className="py-8 md:py-16 bg-background">
       {(title || subtitle) && (
-        <div className="mb-10 text-center">
-          {title && <h2 className="mb-3 text-3xl font-bold text-metal-800 md:text-4xl">{title}</h2>}
-          {subtitle && <p className="mx-auto max-w-3xl text-lg text-metal-500">{subtitle}</p>}
+        <div className="mb-6 md:mb-10 text-center">
+          {title && <h2 className="mb-2 md:mb-3 text-2xl md:text-3xl lg:text-4xl font-bold text-metal-800">{title}</h2>}
+          {subtitle && <p className="mx-auto max-w-3xl text-sm md:text-lg text-metal-500">{subtitle}</p>}
         </div>
       )}
       
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 md:gap-6 grid-cols-2 lg:grid-cols-3">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.id}

@@ -18,63 +18,73 @@ const Hero = () => {
   };
   
   return (
-    <section className="relative overflow-hidden bg-metal-900 py-16 text-white md:py-24 lg:py-32">
+    <section className="relative overflow-hidden bg-metal-900 py-8 text-white md:py-16 lg:py-20">
       {/* Video Background */}
       <div className="absolute inset-0 z-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="h-full w-full object-cover opacity-50"
-        >
-          <source src="https://videos.pexels.com/video-files/5846598/5846598-hd_1080_1920_25fps.mp4" type="video/mp4" />
-        </video>
+        {isMobile ? (
+          // Use static image on mobile to improve performance
+          <div 
+            className="h-full w-full bg-cover bg-center opacity-50"
+            style={{ 
+              backgroundImage: "url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1169&auto=format&fit=crop')" 
+            }}
+          />
+        ) : (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="h-full w-full object-cover opacity-50"
+          >
+            <source src="https://videos.pexels.com/video-files/5846598/5846598-hd_1080_1920_25fps.mp4" type="video/mp4" />
+          </video>
+        )}
         <div className="absolute inset-0 bg-metal-900/60"></div>
       </div>
 
-      {/* Background Pattern */}
+      {/* Background Pattern - simplified for mobile */}
       <div className="absolute inset-0 opacity-10 z-10">
-        <div className="absolute -right-16 -top-16 h-96 w-96 rounded-full border border-white/20" />
-        <div className="absolute bottom-20 left-20 h-64 w-64 rounded-full border border-white/20" />
+        <div className="absolute -right-8 -top-8 h-48 w-48 md:h-96 md:w-96 md:-right-16 md:-top-16 rounded-full border border-white/20" />
+        <div className="absolute bottom-10 left-10 h-32 w-32 md:h-64 md:w-64 md:bottom-20 md:left-20 rounded-full border border-white/20" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(249,115,22,0.15),transparent)]" />
       </div>
 
       <div className="container relative px-4 md:px-6 z-20">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-6 inline-block rounded-full bg-metal-700/50 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
+          <div className="mb-4 md:mb-6 inline-block rounded-full bg-metal-700/50 px-3 py-1 md:px-4 md:py-1.5 text-xs md:text-sm font-medium backdrop-blur-sm">
             <span className="text-forge-500">Kvalitet</span>
-            <span className="mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
+            <span className="mx-1 md:mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
             <span className="text-metal-200">Hantverk</span>
-            <span className="mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
+            <span className="mx-1 md:mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
             <span className="text-metal-200">Precision</span>
           </div>
           
-          <div className="mb-6 flex justify-center">
+          <div className="mb-4 md:mb-6 flex justify-center">
             <img 
               src="/images/hslogo.png" 
               alt="Hustofta Smide & Mekaniska" 
               className="h-auto max-w-full" 
-              style={{ maxHeight: '180px' }}
+              style={{ maxHeight: isMobile ? '120px' : '180px' }}
             />
           </div>
           
-          <p className="mx-auto mb-8 md:mb-10 max-w-2xl text-base md:text-lg lg:text-xl text-metal-200">
-            Vi kombinerar traditionellt hantverk med modern teknologi för att skapa hållbara lösningar i metall för både företag och privatpersoner.
+          <p className="mx-auto mb-6 md:mb-8 max-w-2xl text-sm md:text-lg text-metal-200 leading-relaxed">
+            Vi kombinerar traditionellt hantverk med modern teknologi för hållbara metallösningar.
           </p>
           
-          <div className="flex flex-col justify-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+          <div className="flex flex-col justify-center space-y-3 sm:flex-row sm:space-x-4 sm:space-y-0">
             <button
               onClick={() => scrollToSection('services')}
-              className="btn-primary group inline-flex items-center justify-center space-x-2 bg-forge-500 text-white hover:bg-forge-600"
+              className="btn-primary group inline-flex items-center justify-center space-x-2 bg-forge-500 text-white hover:bg-forge-600 px-6 py-3 text-sm md:text-base"
             >
               <span>Våra tjänster</span>
-              <ArrowRight size={isMobile ? 14 : 16} className="transition-transform group-hover:translate-x-1" />
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
             </button>
             
             <button
               onClick={() => scrollToSection('projects')}
-              className="btn-outline border-metal-600 text-forge-500 hover:bg-metal-800"
+              className="btn-outline border-metal-600 text-forge-500 hover:bg-metal-800 px-6 py-3 text-sm md:text-base"
             >
               Se våra projekt
             </button>
@@ -82,8 +92,8 @@ const Hero = () => {
         </div>
       </div>
       
-      {/* Bottom Divider */}
-      <div className="absolute bottom-0 left-0 h-8 w-full overflow-hidden z-20">
+      {/* Bottom Divider - simplified */}
+      <div className="absolute bottom-0 left-0 h-4 md:h-8 w-full overflow-hidden z-20">
         <svg
           className="absolute bottom-0 w-full text-background"
           xmlns="http://www.w3.org/2000/svg"

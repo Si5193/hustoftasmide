@@ -1,5 +1,4 @@
 
-import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Project } from '../sections/ProjectsSection';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -28,20 +27,19 @@ const ProjectCard = ({
   return (
     <div 
       key={project.id}
-      className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg"
+      className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg min-h-[120px] md:min-h-[200px]"
       onClick={() => onOpenProject(project, index)}
     >
-      <div className="aspect-square sm:aspect-[4/3] overflow-hidden">
+      <div className="aspect-square overflow-hidden">
         {imageError[project.id] ? (
-          <div className="flex flex-col h-full w-full items-center justify-center bg-metal-200 p-4">
-            <p className="text-metal-500">Bild saknas</p>
-            <p className="text-xs text-metal-400 mt-1 text-center break-all">{project.image}</p>
+          <div className="flex flex-col h-full w-full items-center justify-center bg-metal-200 p-2 md:p-4">
+            <p className="text-xs md:text-sm text-metal-500">Bild saknas</p>
           </div>
         ) : (
           <div className="relative h-full w-full">
             {!imagesLoaded[project.id] && (
               <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
-                <div className="h-6 w-6 md:h-8 md:w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
+                <div className="h-4 w-4 md:h-8 md:w-8 animate-spin rounded-full border-2 md:border-4 border-metal-300 border-t-metal-500"></div>
               </div>
             )}
             <img
@@ -52,19 +50,20 @@ const ProjectCard = ({
               }`}
               onError={() => onImageError(project.id)}
               onLoad={() => onImageLoad(project.id)}
+              loading="lazy"
             />
           </div>
         )}
       </div>
       
-      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-4 md:p-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="translate-y-4 transform transition-transform duration-300 group-hover:translate-y-0">
-          <h3 className="mb-1 text-base md:text-xl font-semibold text-white">{project.title}</h3>
+      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-2 md:p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="translate-y-2 md:translate-y-4 transform transition-transform duration-300 group-hover:translate-y-0">
+          <h3 className="mb-0.5 md:mb-1 text-xs md:text-lg font-semibold text-white leading-tight">{project.title}</h3>
           <p className="text-xs md:text-sm text-metal-200">{project.category}</p>
         </div>
         
-        <div className="absolute right-3 top-3 md:right-4 md:top-4 rounded-full bg-white/10 p-1.5 md:p-2 backdrop-blur-sm">
-          <Plus className="text-white" size={isMobile ? 16 : 20} />
+        <div className="absolute right-2 top-2 md:right-4 md:top-4 rounded-full bg-white/10 p-1 md:p-2 backdrop-blur-sm">
+          <Plus className="text-white" size={isMobile ? 12 : 20} />
         </div>
       </div>
     </div>

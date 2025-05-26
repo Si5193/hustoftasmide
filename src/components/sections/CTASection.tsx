@@ -67,19 +67,19 @@ const CTASection = () => {
 
   return (
     <>
-      <section id="contact" className="bg-metal-800 py-16 text-white md:py-20">
+      <section id="contact" className="bg-metal-800 py-8 md:py-16 text-white">
         <div className="container px-4 md:px-6">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+            <h2 className="mb-3 md:mb-4 text-2xl md:text-3xl lg:text-4xl font-bold">
               Redo att starta ditt projekt?
             </h2>
-            <p className="mb-8 text-lg text-metal-300">
-              Kontakta oss idag för en kostnadsfri konsultation. Vi hjälper dig att förverkliga dina idéer.
+            <p className="mb-6 md:mb-8 text-sm md:text-lg text-metal-300">
+              Kontakta oss idag för en kostnadsfri konsultation.
             </p>
             <div className="flex justify-center">
               <button 
                 onClick={() => setOpen(true)}
-                className="btn-primary bg-forge-500 hover:bg-forge-600 px-6 py-3 rounded-md font-medium"
+                className="btn-primary bg-forge-500 hover:bg-forge-600 px-6 py-3 rounded-md font-medium text-sm md:text-base min-h-[44px]"
               >
                 Kontakta oss
               </button>
@@ -89,35 +89,35 @@ const CTASection = () => {
       </section>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[650px] max-h-[90vh] w-[90vw]">
+        <DialogContent className="sm:max-w-[500px] md:max-w-[600px] lg:max-w-[650px] max-h-[90vh] w-[95vw] sm:w-[90vw]">
           <DialogHeader>
-            <DialogTitle>Kontakta oss</DialogTitle>
-            <DialogDescription>
-              Fyll i formuläret nedan så återkommer vi till dig så snart som möjligt.
+            <DialogTitle className="text-base md:text-lg">Kontakta oss</DialogTitle>
+            <DialogDescription className="text-sm">
+              Fyll i formuläret så återkommer vi så snart som möjligt.
             </DialogDescription>
           </DialogHeader>
           
-          <ScrollArea className="max-h-[60vh] pr-4">
-            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-              <div className="space-y-3">
-                <Label>Jag kontaktar som:</Label>
+          <ScrollArea className="max-h-[60vh] pr-2 md:pr-4">
+            <form onSubmit={handleSubmit} className="mt-4 space-y-3 md:space-y-4">
+              <div className="space-y-2 md:space-y-3">
+                <Label className="text-sm">Jag kontaktar som:</Label>
                 <RadioGroup 
                   value={customerType} 
                   onValueChange={setCustomerType}
-                  className="flex space-x-6"
+                  className="flex space-x-4 md:space-x-6"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="private" id="private" />
-                    <Label htmlFor="private" className="cursor-pointer">Privatperson</Label>
+                    <Label htmlFor="private" className="cursor-pointer text-sm">Privatperson</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="company" id="company" />
-                    <Label htmlFor="company" className="cursor-pointer">Företag</Label>
+                    <Label htmlFor="company" className="cursor-pointer text-sm">Företag</Label>
                   </div>
                 </RadioGroup>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-1 md:space-y-2">
                 <label htmlFor="name" className="block text-sm font-medium">
                   {customerType === 'company' ? 'Företagsnamn' : 'Namn'}
                 </label>
@@ -127,11 +127,12 @@ const CTASection = () => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder={customerType === 'company' ? 'Företagets namn' : 'Ditt namn'}
                   required
+                  className="min-h-[44px]"
                 />
               </div>
               
               {customerType === 'company' && (
-                <div className="space-y-2">
+                <div className="space-y-1 md:space-y-2">
                   <label htmlFor="contactPerson" className="block text-sm font-medium">
                     Kontaktperson
                   </label>
@@ -141,11 +142,12 @@ const CTASection = () => {
                     onChange={(e) => setContactPerson(e.target.value)}
                     placeholder="Namn på kontaktperson"
                     required
+                    className="min-h-[44px]"
                   />
                 </div>
               )}
               
-              <div className="space-y-2">
+              <div className="space-y-1 md:space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium">
                   E-post
                 </label>
@@ -156,10 +158,11 @@ const CTASection = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="din.epost@exempel.se"
                   required
+                  className="min-h-[44px]"
                 />
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-1 md:space-y-2">
                 <label htmlFor="message" className="block text-sm font-medium">
                   Meddelande
                 </label>
@@ -168,19 +171,20 @@ const CTASection = () => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Beskriv ditt projekt eller fråga"
-                  rows={4}
+                  rows={3}
                   required
+                  className="min-h-[80px]"
                 />
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-1 md:space-y-2">
                 <label htmlFor="attachments" className="block text-sm font-medium">
                   Bifoga filer
                 </label>
                 <div className="mt-1 flex items-center gap-2">
                   <label 
                     htmlFor="file-upload" 
-                    className="flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent"
+                    className="flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent min-h-[44px]"
                   >
                     <Paperclip className="h-4 w-4" />
                     <span>Välj filer</span>
@@ -202,7 +206,7 @@ const CTASection = () => {
                       {attachments.map((file, index) => (
                         <li 
                           key={`${file.name}-${index}`} 
-                          className="flex items-center justify-between rounded-md border border-input px-3 py-2 text-sm"
+                          className="flex items-center justify-between rounded-md border border-input px-3 py-2 text-sm min-h-[44px]"
                         >
                           <span className="truncate max-w-[80%]">{file.name}</span>
                           <Button 
@@ -225,14 +229,14 @@ const CTASection = () => {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300"
+                  className="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300 min-h-[44px] text-sm"
                 >
                   Avbryt
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded bg-forge-500 px-4 py-2 text-white hover:bg-forge-600 disabled:opacity-70"
+                  className="rounded bg-forge-500 px-4 py-2 text-white hover:bg-forge-600 disabled:opacity-70 min-h-[44px] text-sm"
                 >
                   {isSubmitting ? 'Skickar...' : 'Skicka'}
                 </button>
