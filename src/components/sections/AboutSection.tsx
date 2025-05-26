@@ -1,6 +1,7 @@
 
 import { Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
 const AboutSection = () => {
   return <section id="about" className="bg-metal-50 py-16 md:py-24">
       <div className="container px-4 md:px-6">
@@ -17,11 +18,11 @@ const AboutSection = () => {
             <div className="inline-block rounded-full bg-forge-500/10 px-4 py-1.5 text-sm font-medium text-forge-600">
               Om oss
             </div>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-metal-800 md:text-4xl">Tradition och kvalitet</h2>
-            <p className="mt-4 text-lg text-metal-600">Vi startade Hustofta Smide & Mekaniska med kärlek till hantverk och viljan att skapa saker som håller. Genom åren har vi lärt oss vad våra kunder verkligen behöver och vi jobbar alltid för att leverera det bästa.</p>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-metal-800 md:text-4xl">Kvalitet och passion</h2>
+            <p className="mt-4 text-lg text-metal-600">Jag driver Hustofta Smide & Mekaniska med passion för metallarbete och fokus på att skapa lösningar som fungerar. Som enmansföretag kan jag vara flexibel och ge personlig service från idé till färdig produkt.</p>
             
             <ul className="mt-6 space-y-3">
-              {['Skickliga hantverkare som bryr sig om kvalitet', 'Modern utrustning för bästa resultat', 'Vi lyssnar på dig och anpassar oss efter dina behov', 'Vi bygger för att det ska hålla länge'].map((item, i) => <li key={i} className="flex items-start">
+              {['Gedigen erfarenhet av metallbearbetning och smide', 'Modern utrustning för professionella resultat', 'Personlig service och flexibla lösningar', 'Fokus på kvalitet som håller över tid'].map((item, i) => <li key={i} className="flex items-start">
                   <div className="mr-3 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-forge-500/10 text-forge-500">
                     <Check size={14} />
                   </div>
@@ -40,4 +41,5 @@ const AboutSection = () => {
       </div>
     </section>;
 };
+
 export default AboutSection;
