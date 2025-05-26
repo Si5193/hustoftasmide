@@ -8,7 +8,15 @@ const AboutSection = () => {
         <div className="grid items-center gap-8 md:gap-12 md:grid-cols-2">
           <div className="relative order-2 md:order-1">
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-xl">
-              <img src="/images/hustofta.jpg" alt="Hustofta Smide" className="h-full w-full object-cover" />
+              <video 
+                src="https://i.imgur.com/Ftj6aDe.mp4" 
+                alt="Hustofta Smide video" 
+                className="h-full w-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
             </div>
             
             <div className="absolute -left-2 -top-2 md:-left-4 md:-top-4 h-16 w-16 md:h-24 md:w-24 rounded-full bg-forge-500/20"></div>
