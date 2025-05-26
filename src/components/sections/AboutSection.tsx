@@ -1,22 +1,46 @@
 
-import { Check } from 'lucide-react';
+import { Check, VolumeOff, Volume2 } from 'lucide-react';
+import { useState, useRef } from 'react';
 
 const AboutSection = () => {
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
   return (
     <section id="about" className="bg-metal-50 py-8 md:py-16">
       <div className="container px-4 md:px-6">
         <div className="grid items-center gap-8 md:gap-12 md:grid-cols-2">
-          <div className="relative order-2 md:order-1">
+          <div className="relative order-2 md:order-1 group">
             <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-xl">
               <video 
+                ref={videoRef}
                 src="https://i.imgur.com/Ftj6aDe.mp4" 
-                alt="Hustofta Smide video" 
                 className="h-full w-full object-cover"
                 autoPlay
                 loop
                 muted
                 playsInline
               />
+              
+              {/* Sound Control Button */}
+              <button
+                onClick={toggleMute}
+                className="absolute bottom-3 right-3 md:bottom-4 md:right-4 p-2 md:p-3 bg-black/50 hover:bg-black/70 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label={isMuted ? "Sätt på ljud" : "Stäng av ljud"}
+              >
+                {isMuted ? (
+                  <VolumeOff className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                ) : (
+                  <Volume2 className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                )}
+              </button>
             </div>
             
             <div className="absolute -left-2 -top-2 md:-left-4 md:-top-4 h-16 w-16 md:h-24 md:w-24 rounded-full bg-forge-500/20"></div>
