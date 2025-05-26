@@ -1,9 +1,19 @@
 
-import { Link } from 'react-router-dom';
 import { Hammer, Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  // Function to handle scrolling to a section
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80, // Adjust for header height
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <footer className="bg-metal-800 text-white">
@@ -25,34 +35,49 @@ const Footer = () => {
             <h5 className="text-lg font-semibold">Snabblänkar</h5>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="group flex items-center text-metal-200 transition-colors hover:text-white">
+                <button
+                  onClick={() => scrollToSection('top')}
+                  className="group flex items-center text-metal-200 transition-colors hover:text-white"
+                >
                   <ArrowRight size={16} className="mr-2 text-forge-500 transition-transform group-hover:translate-x-1" />
                   Hem
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/about" className="group flex items-center text-metal-200 transition-colors hover:text-white">
+                <button
+                  onClick={() => scrollToSection('about')}
+                  className="group flex items-center text-metal-200 transition-colors hover:text-white"
+                >
                   <ArrowRight size={16} className="mr-2 text-forge-500 transition-transform group-hover:translate-x-1" />
                   Om oss
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/services" className="group flex items-center text-metal-200 transition-colors hover:text-white">
+                <button
+                  onClick={() => scrollToSection('services')}
+                  className="group flex items-center text-metal-200 transition-colors hover:text-white"
+                >
                   <ArrowRight size={16} className="mr-2 text-forge-500 transition-transform group-hover:translate-x-1" />
                   Tjänster
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/projects" className="group flex items-center text-metal-200 transition-colors hover:text-white">
+                <button
+                  onClick={() => scrollToSection('projects')}
+                  className="group flex items-center text-metal-200 transition-colors hover:text-white"
+                >
                   <ArrowRight size={16} className="mr-2 text-forge-500 transition-transform group-hover:translate-x-1" />
                   Projekt
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/contact" className="group flex items-center text-metal-200 transition-colors hover:text-white">
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className="group flex items-center text-metal-200 transition-colors hover:text-white"
+                >
                   <ArrowRight size={16} className="mr-2 text-forge-500 transition-transform group-hover:translate-x-1" />
                   Kontakt
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
