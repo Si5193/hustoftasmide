@@ -1,4 +1,3 @@
-
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -52,14 +51,6 @@ const Hero = () => {
 
       <div className="container relative px-4 md:px-6 z-20">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-4 md:mb-6 inline-block rounded-full bg-metal-700/50 px-3 py-1 md:px-4 md:py-1.5 text-xs md:text-sm font-medium backdrop-blur-sm">
-            <span className="text-forge-500">Kvalitet</span>
-            <span className="mx-1 md:mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
-            <span className="text-metal-200">Hantverk</span>
-            <span className="mx-1 md:mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
-            <span className="text-metal-200">Precision</span>
-          </div>
-          
           <div className="mb-4 md:mb-6 flex justify-center">
             <img 
               src="/images/hslogo.png" 
@@ -69,9 +60,17 @@ const Hero = () => {
             />
           </div>
           
-          <p className="mx-auto mb-6 md:mb-8 max-w-2xl text-sm md:text-lg text-metal-200 leading-relaxed">
+          <p className="mx-auto mb-4 md:mb-6 max-w-2xl text-sm md:text-lg text-metal-200 leading-relaxed">
             Vi kombinerar traditionellt hantverk med modern teknologi för hållbara metallösningar.
           </p>
+          
+          <div className="mb-6 md:mb-8 inline-block rounded-full bg-metal-700/50 px-3 py-1 md:px-4 md:py-1.5 text-xs md:text-sm font-medium backdrop-blur-sm">
+            <span className="text-forge-500">Kvalitet</span>
+            <span className="mx-1 md:mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
+            <span className="text-metal-200">Hantverk</span>
+            <span className="mx-1 md:mx-2 inline-block h-1 w-1 rounded-full bg-metal-400"></span>
+            <span className="text-metal-200">Precision</span>
+          </div>
           
           <div className="flex flex-col justify-center space-y-3 sm:flex-row sm:space-x-4 sm:space-y-0">
             <button
