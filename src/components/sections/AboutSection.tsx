@@ -1,6 +1,5 @@
 
-import { Check, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Check } from 'lucide-react';
 
 const AboutSection = () => {
   return <section id="about" className="bg-metal-50 py-16 md:py-24">
@@ -29,13 +28,6 @@ const AboutSection = () => {
                   <span className="text-metal-700">{item}</span>
                 </li>)}
             </ul>
-            
-            <div className="mt-8">
-              <Link to="/about" className="group inline-flex items-center font-medium text-forge-500 hover:text-forge-600">
-                <span>Läs mer om oss</span>
-                <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
-              </Link>
-            </div>
           </div>
         </div>
       </div>
