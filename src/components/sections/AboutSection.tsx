@@ -1,3 +1,4 @@
+
 import { Check, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 const AboutSection = () => {
@@ -17,10 +18,10 @@ const AboutSection = () => {
               Om oss
             </div>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-metal-800 md:text-4xl">Tradition och kvalitet</h2>
-            <p className="mt-4 text-lg text-metal-600">Hustofta Smide &amp; Mekaniska grundades med en passion för hantverk och ett engagemang för kvalitet. Vi har utvecklat en djup förståelse för metallbearbetning och kundernas behov.</p>
+            <p className="mt-4 text-lg text-metal-600">Vi startade Hustofta Smide & Mekaniska med kärlek till hantverk och viljan att skapa saker som håller. Genom åren har vi lärt oss vad våra kunder verkligen behöver och vi jobbar alltid för att leverera det bästa.</p>
             
             <ul className="mt-6 space-y-3">
-              {['Erfarna hantverkare med gedigen utbildning', 'Modern utrustning för högsta precision', 'Flexibla lösningar anpassade efter dina behov', 'Hållbart hantverk som håller över tid'].map((item, i) => <li key={i} className="flex items-start">
+              {['Skickliga hantverkare som bryr sig om kvalitet', 'Modern utrustning för bästa resultat', 'Vi lyssnar på dig och anpassar oss efter dina behov', 'Vi bygger för att det ska hålla länge'].map((item, i) => <li key={i} className="flex items-start">
                   <div className="mr-3 mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-forge-500/10 text-forge-500">
                     <Check size={14} />
                   </div>
