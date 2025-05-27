@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { 
   Dialog, 
@@ -14,8 +13,16 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { Paperclip, X } from "lucide-react";
+import { Paperclip, X, Upload } from "lucide-react";
 import { useContactEmail } from "@/hooks/useContactEmail";
+import { useFileUpload } from "@/hooks/useFileUpload";
+
+interface UploadedFile {
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+}
 
 const CTASection = () => {
   const [open, setOpen] = useState(false);
@@ -24,9 +31,10 @@ const CTASection = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [customerType, setCustomerType] = useState('private');
-  const [attachments, setAttachments] = useState<File[]>([]);
+  const [attachments, setAttachments] = useState<UploadedFile[]>([]);
   const isMobile = useIsMobile();
   const { sendContactEmail, isSubmitting } = useContactEmail();
+  const { uploadFile, isUploading } = useFileUpload();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,15 +62,32 @@ const CTASection = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const fileList = Array.from(e.target.files);
-      setAttachments(prev => [...prev, ...fileList]);
+      const files = Array.from(e.target.files);
+      
+      for (const file of files) {
+        const uploadedFile = await uploadFile(file);
+        if (uploadedFile) {
+          setAttachments(prev => [...prev, uploadedFile]);
+        }
+      }
+      
+      // Clear the input so same file can be selected again
+      e.target.value = '';
     }
   };
 
   const removeAttachment = (index: number) => {
     setAttachments(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
@@ -184,19 +209,24 @@ const CTASection = () => {
                 <div className="mt-1 flex items-center gap-2">
                   <label 
                     htmlFor="file-upload" 
-                    className="flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent min-h-[44px]"
+                    className={`flex cursor-pointer items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent min-h-[44px] ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <Paperclip className="h-4 w-4" />
-                    <span>Välj filer</span>
+                    {isUploading ? <Upload className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                    <span>{isUploading ? 'Laddar upp...' : 'Välj filer'}</span>
                     <input
                       id="file-upload"
                       name="file-upload"
                       type="file"
                       multiple
+                      accept="image/*,.pdf"
+                      disabled={isUploading}
                       className="sr-only"
                       onChange={handleFileChange}
                     />
                   </label>
+                  <span className="text-xs text-muted-foreground">
+                    Max 10MB per fil. Bilder och PDF tillåtna.
+                  </span>
                 </div>
                 
                 {attachments.length > 0 && (
@@ -208,12 +238,15 @@ const CTASection = () => {
                           key={`${file.name}-${index}`} 
                           className="flex items-center justify-between rounded-md border border-input px-3 py-2 text-sm min-h-[44px]"
                         >
-                          <span className="truncate max-w-[80%]">{file.name}</span>
+                          <div className="flex flex-col flex-1 min-w-0">
+                            <span className="truncate font-medium">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">{formatFileSize(file.size)}</span>
+                          </div>
                           <Button 
                             variant="ghost" 
                             size="sm" 
                             onClick={() => removeAttachment(index)}
-                            className="h-6 w-6 p-0"
+                            className="h-6 w-6 p-0 ml-2"
                           >
                             <X className="h-4 w-4" />
                             <span className="sr-only">Ta bort</span>
@@ -235,7 +268,7 @@ const CTASection = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="rounded bg-forge-500 px-4 py-2 text-white hover:bg-forge-600 disabled:opacity-70 min-h-[44px] text-sm"
                 >
                   {isSubmitting ? 'Skickar...' : 'Skicka'}

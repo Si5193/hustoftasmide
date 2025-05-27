@@ -3,13 +3,20 @@ import { useState } from 'react';
 import { useToast } from './use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
+interface UploadedFile {
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+}
+
 interface ContactFormData {
   name: string;
   contactPerson: string;
   email: string;
   message: string;
   customerType: string;
-  attachments: File[];
+  attachments: UploadedFile[];
 }
 
 export const useContactEmail = () => {
@@ -25,7 +32,8 @@ export const useContactEmail = () => {
         contactPerson: formData.contactPerson,
         email: formData.email,
         customerType: formData.customerType,
-        attachmentsCount: formData.attachments.length
+        attachmentsCount: formData.attachments.length,
+        attachmentUrls: formData.attachments.map(file => file.url)
       });
 
       // Call the Supabase Edge Function
@@ -36,11 +44,7 @@ export const useContactEmail = () => {
           email: formData.email,
           message: formData.message,
           customerType: formData.customerType,
-          attachments: formData.attachments.map(file => ({
-            name: file.name,
-            size: file.size,
-            type: file.type
-          }))
+          attachments: formData.attachments
         }
       });
 

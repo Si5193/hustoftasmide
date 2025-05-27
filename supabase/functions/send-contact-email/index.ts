@@ -6,6 +6,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+interface UploadedFile {
+  name: string;
+  url: string;
+  size: number;
+  type: string;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -45,7 +52,7 @@ serve(async (req) => {
 
     emailBody += `<p><small>Skickat från hustoftasmide.se kontaktformulär</small></p>`
 
-    const emailData = {
+    const emailData: any = {
       from: 'onboarding@resend.dev',
       to: ['info@hustoftasmide.se'],
       subject: emailSubject,
@@ -53,7 +60,45 @@ serve(async (req) => {
       reply_to: email,
     }
 
-    console.log('Skickar e-post med data:', emailData)
+    // Download and attach files if any
+    if (attachments && attachments.length > 0) {
+      const emailAttachments = []
+      
+      for (const file of attachments as UploadedFile[]) {
+        try {
+          console.log('Downloading file from:', file.url)
+          
+          const fileResponse = await fetch(file.url)
+          if (!fileResponse.ok) {
+            console.error(`Failed to download file ${file.name}: ${fileResponse.status}`)
+            continue
+          }
+          
+          const fileBuffer = await fileResponse.arrayBuffer()
+          const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)))
+          
+          emailAttachments.push({
+            filename: file.name,
+            content: base64Content,
+            type: file.type,
+            disposition: 'attachment'
+          })
+          
+          console.log(`Successfully processed attachment: ${file.name}`)
+        } catch (error) {
+          console.error(`Error processing attachment ${file.name}:`, error)
+        }
+      }
+      
+      if (emailAttachments.length > 0) {
+        emailData.attachments = emailAttachments
+      }
+    }
+
+    console.log('Skickar e-post med data:', {
+      ...emailData,
+      attachments: emailData.attachments ? `${emailData.attachments.length} filer` : 'Inga bilagor'
+    })
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
