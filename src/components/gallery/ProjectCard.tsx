@@ -1,6 +1,6 @@
 
 import { Plus } from 'lucide-react';
-import { Project } from '../sections/ProjectsSection';
+import { Project } from '../../hooks/useSupabaseProjects';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProjectCardProps {

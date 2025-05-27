@@ -1,6 +1,6 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Project } from '../sections/ProjectsSection';
+import { Project } from '../../hooks/useSupabaseProjects';
 import ShareButton from '../ui/share-button';
 
 interface ProjectModalProps {

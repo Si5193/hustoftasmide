@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Project } from '../components/sections/ProjectsSection';
+import { Project } from './useSupabaseProjects';
 import { useToast } from '@/hooks/use-toast';
 
 const STORAGE_KEY = 'hustofta_projects';
