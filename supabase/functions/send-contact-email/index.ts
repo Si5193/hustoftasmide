@@ -46,12 +46,14 @@ serve(async (req) => {
     emailBody += `<p><small>Skickat från hustoftasmide.se kontaktformulär</small></p>`
 
     const emailData = {
-      from: 'noreply@hustoftasmide.se',
+      from: 'onboarding@resend.dev',
       to: ['info@hustoftasmide.se'],
       subject: emailSubject,
       html: emailBody,
       reply_to: email,
     }
+
+    console.log('Skickar e-post med data:', emailData)
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
