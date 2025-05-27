@@ -2,14 +2,14 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useProjectStorage } from '../../hooks/useProjectStorage';
+import { useSupabaseProjects } from '../../hooks/useSupabaseProjects';
 import AdminProjectForm from './AdminProjectForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Project } from '../sections/ProjectsSection';
+import { Project } from '../../hooks/useSupabaseProjects';
 import { Edit, Trash2 } from 'lucide-react';
 
 const AdminProjectList = () => {
-  const { projects, deleteProject } = useProjectStorage();
+  const { projects, deleteProject } = useSupabaseProjects();
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 

@@ -8,14 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminProjectList from '../components/admin/AdminProjectList';
 import AdminProjectForm from '../components/admin/AdminProjectForm';
-import { useProjectStorage } from '../hooks/useProjectStorage';
+import { useSupabaseProjects } from '../hooks/useSupabaseProjects';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut } from 'lucide-react';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const { projects, loading } = useProjectStorage();
+  const { projects, loading } = useSupabaseProjects();
   const { toast } = useToast();
   const navigate = useNavigate();
 

@@ -1,14 +1,6 @@
 
 import ProjectGallery from '../ProjectGallery';
-
-// Project data type definition
-export interface Project {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  image: string;
-}
+import { Project } from '../../hooks/useSupabaseProjects';
 
 interface ProjectsSectionProps {
   projects: Project[];

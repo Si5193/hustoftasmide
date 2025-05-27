@@ -5,8 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useProjectStorage } from '../../hooks/useProjectStorage';
-import { Project } from '../sections/ProjectsSection';
+import { useSupabaseProjects, Project } from '../../hooks/useSupabaseProjects';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 
@@ -23,7 +22,7 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { addProject, updateProject } = useProjectStorage();
+  const { addProject, updateProject } = useSupabaseProjects();
   const { toast } = useToast();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +65,7 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
     try {
       if (initialProject) {
         // Update existing project
-        const success = updateProject(initialProject.id, {
+        const success = await updateProject(initialProject.id, {
           title: title.trim(),
           description: description.trim(),
           category,
@@ -78,7 +77,7 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
         }
       } else {
         // Add new project
-        const newProject = addProject({
+        const newProject = await addProject({
           title: title.trim(),
           description: description.trim(),
           category,

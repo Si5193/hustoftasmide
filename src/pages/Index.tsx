@@ -6,10 +6,10 @@ import ServicesSection from '../components/sections/ServicesSection';
 import AboutSection from '../components/sections/AboutSection';
 import ProjectsSection from '../components/sections/ProjectsSection';
 import CTASection from '../components/sections/CTASection';
-import { useProjectStorage } from '../hooks/useProjectStorage';
+import { useSupabaseProjects } from '../hooks/useSupabaseProjects';
 
 const Index = () => {
-  const { projects, loading } = useProjectStorage();
+  const { projects, loading } = useSupabaseProjects();
 
   useEffect(() => {
     window.scrollTo(0, 0);
