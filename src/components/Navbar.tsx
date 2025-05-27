@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Hammer, Menu, X, Settings, Phone } from 'lucide-react';
@@ -163,7 +162,7 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Navigation Overlay */}
-      <div className={`fixed inset-0 z-50 bg-white dark:bg-gray-900 transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed inset-0 z-50 bg-white/100 dark:bg-gray-900/100 backdrop-blur-sm transition-transform duration-300 md:hidden ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="container flex h-full flex-col px-4">
           <div className="flex items-center justify-between py-4">
             <a href="#" onClick={e => scrollToSection(e, 'top')} className="flex items-center space-x-2">
