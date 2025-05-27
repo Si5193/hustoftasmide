@@ -60,22 +60,51 @@ serve(async (req) => {
       reply_to: email,
     }
 
-    // Download and attach files if any
+    // Process attachments if any
     if (attachments && attachments.length > 0) {
       const emailAttachments = []
       
       for (const file of attachments as UploadedFile[]) {
         try {
-          console.log('Downloading file from:', file.url)
+          console.log('Processing attachment:', file.name, 'from URL:', file.url)
           
-          const fileResponse = await fetch(file.url)
+          // Download file with timeout and proper error handling
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+          
+          const fileResponse = await fetch(file.url, {
+            signal: controller.signal,
+            headers: {
+              'User-Agent': 'Supabase-Edge-Function'
+            }
+          })
+          
+          clearTimeout(timeoutId)
+          
           if (!fileResponse.ok) {
-            console.error(`Failed to download file ${file.name}: ${fileResponse.status}`)
+            console.error(`Failed to download file ${file.name}: ${fileResponse.status} ${fileResponse.statusText}`)
             continue
           }
           
+          // Get file as array buffer
           const fileBuffer = await fileResponse.arrayBuffer()
-          const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)))
+          
+          if (fileBuffer.byteLength === 0) {
+            console.error(`Downloaded file ${file.name} is empty`)
+            continue
+          }
+          
+          // Convert to base64 using proper method
+          const uint8Array = new Uint8Array(fileBuffer)
+          let binary = ''
+          const chunkSize = 0x8000 // 32KB chunks to avoid stack overflow
+          
+          for (let i = 0; i < uint8Array.length; i += chunkSize) {
+            const chunk = uint8Array.subarray(i, i + chunkSize)
+            binary += String.fromCharCode.apply(null, Array.from(chunk))
+          }
+          
+          const base64Content = btoa(binary)
           
           emailAttachments.push({
             filename: file.name,
@@ -84,20 +113,24 @@ serve(async (req) => {
             disposition: 'attachment'
           })
           
-          console.log(`Successfully processed attachment: ${file.name}`)
+          console.log(`Successfully processed attachment: ${file.name} (${fileBuffer.byteLength} bytes)`)
         } catch (error) {
-          console.error(`Error processing attachment ${file.name}:`, error)
+          console.error(`Error processing attachment ${file.name}:`, error.message)
+          // Continue with other files even if one fails
         }
       }
       
       if (emailAttachments.length > 0) {
         emailData.attachments = emailAttachments
+        console.log(`Added ${emailAttachments.length} attachments to email`)
+      } else {
+        console.log('No attachments could be processed successfully')
       }
     }
 
-    console.log('Skickar e-post med data:', {
+    console.log('Sending email with data:', {
       ...emailData,
-      attachments: emailData.attachments ? `${emailData.attachments.length} filer` : 'Inga bilagor'
+      attachments: emailData.attachments ? `${emailData.attachments.length} files` : 'No attachments'
     })
 
     const resendResponse = await fetch('https://api.resend.com/emails', {
