@@ -131,6 +131,14 @@ const Footer = () => {
 
         <div className="mt-12 border-t border-metal-700 pt-6 text-center text-sm text-metal-300">
           <p>© {currentYear} Hustofta Smide & Mekaniska. Alla rättigheter förbehållna.</p>
+          <p className="mt-2">
+            <a 
+              href="mailto:simonstrandlund@gmail.com?subject=Hjälp med hemsida"
+              className="text-forge-500 hover:text-forge-400 transition-colors"
+            >
+              Hemsida byggd av SMVN
+            </a>
+          </p>
         </div>
       </div>
     </footer>
