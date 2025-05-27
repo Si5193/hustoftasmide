@@ -20,22 +20,28 @@ const Navbar = () => {
   } = useNavbarLogic();
 
   return (
-    <header className={`fixed left-0 top-0 z-40 w-full transition-all duration-300 ${scrolled ? 'bg-background/90 py-3 shadow-md backdrop-blur-md' : 'bg-transparent py-4'}`}>
+    <header className={`fixed left-0 top-0 z-40 w-full transition-all duration-300 ${
+      isOpen 
+        ? 'bg-white dark:bg-black py-3' 
+        : scrolled 
+        ? 'bg-background/90 py-3 shadow-md backdrop-blur-md' 
+        : 'bg-transparent py-4'
+    }`}>
       <div className="container flex items-center justify-between px-4 md:px-6">
-        <Logo scrolled={scrolled} onLogoClick={handleLogoClick} />
+        <Logo scrolled={scrolled || isOpen} onLogoClick={handleLogoClick} />
 
         <DesktopNavigation 
           navLinks={navLinks}
           showAdminLink={showAdminLink}
-          scrolled={scrolled}
+          scrolled={scrolled || isOpen}
           scrollToSection={scrollToSection}
           isActive={isActive}
         />
 
-        <CallButton scrolled={scrolled} />
+        <CallButton scrolled={scrolled || isOpen} />
 
         {/* Mobile Menu Button */}
-        <button className={`flex md:hidden ${scrolled ? 'text-forge-500' : 'text-white'}`} onClick={toggleMenu} aria-label={isOpen ? 'Close menu' : 'Open menu'}>
+        <button className={`flex md:hidden ${(scrolled || isOpen) ? 'text-forge-500' : 'text-white'}`} onClick={toggleMenu} aria-label={isOpen ? 'Close menu' : 'Open menu'}>
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
