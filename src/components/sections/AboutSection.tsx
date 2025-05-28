@@ -51,7 +51,7 @@ const AboutSection = () => {
               Om oss
             </div>
             <h2 className="mt-3 md:mt-4 text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-metal-800">Kvalitet och passion</h2>
-            <p className="mt-3 md:mt-4 text-sm md:text-lg text-metal-600">Vi driver Hustofta Smide & Mekaniska med passion för metallarbete och fokus på lösningar som fungerar.</p>
+            <p className="mt-3 md:mt-4 text-sm md:text-lg text-metal-600">Vi driver Hustofta Smide & Mekaniska med passion för metallarbete och fokus på lösningar som fungerar. Lokalt förankrade i Höganäs kommun betjänar vi hela nordvästra Skåne.</p>
             
             <ul className="mt-4 md:mt-6 space-y-2 md:space-y-3">
               {[

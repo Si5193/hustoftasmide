@@ -1,3 +1,4 @@
+
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -61,7 +62,7 @@ const Hero = () => {
           </div>
           
           <p className="mx-auto mb-4 md:mb-6 max-w-2xl text-sm md:text-lg text-metal-200 leading-relaxed">
-            Vi kombinerar traditionellt hantverk med modern teknologi för hållbara metallösningar.
+            Vi kombinerar traditionellt hantverk med modern teknologi för hållbara metallösningar i Höganäs kommun med omnejd.
           </p>
           
           <div className="mb-6 md:mb-8 inline-block rounded-full bg-metal-700/50 px-3 py-1 md:px-4 md:py-1.5 text-xs md:text-sm font-medium backdrop-blur-sm">

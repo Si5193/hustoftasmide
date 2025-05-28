@@ -1,3 +1,4 @@
+
 import { Hammer, Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
@@ -17,7 +18,7 @@ const Footer = () => {
   return (
     <footer className="bg-metal-800 text-white">
       <div className="container px-4 py-12 md:px-6 md:py-16">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -25,7 +26,7 @@ const Footer = () => {
               <h4 className="text-xl font-bold tracking-tight">Hustofta</h4>
             </div>
             <p className="text-metal-200">
-              Kvalitetssmide och mekanisk tillverkning för företag och privatpersoner.
+              Kvalitetssmide och mekanisk tillverkning för företag och privatpersoner i Höganäs kommun med omnejd.
             </p>
           </div>
 
@@ -95,7 +96,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <MapPin size={18} className="mr-3 mt-0.5 text-forge-500" />
-                <span className="text-metal-200">Ornakärrsvägen 49, 26395 Höganäs</span>
+                <span className="text-metal-200">Ornakärrsvägen 49, 26391 Höganäs</span>
               </li>
             </ul>
           </div>
@@ -125,6 +126,19 @@ const Footer = () => {
                   <p className="text-sm text-metal-200">Stängt</p>
                 </div>
               </li>
+            </ul>
+          </div>
+
+          {/* Service Area */}
+          <div className="space-y-4">
+            <h5 className="text-lg font-semibold">Verksamhetsområde</h5>
+            <ul className="space-y-2">
+              <li className="text-sm text-metal-200">Höganäs</li>
+              <li className="text-sm text-metal-200">Helsingborg</li>
+              <li className="text-sm text-metal-200">Landskrona</li>
+              <li className="text-sm text-metal-200">Ängelholm</li>
+              <li className="text-sm text-metal-200">Kävlinge</li>
+              <li className="text-sm text-metal-200">Bjuv</li>
             </ul>
           </div>
         </div>
