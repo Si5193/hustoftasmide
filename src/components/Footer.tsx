@@ -137,7 +137,6 @@ const Footer = () => {
               <li className="text-sm text-metal-200">Helsingborg</li>
               <li className="text-sm text-metal-200">Landskrona</li>
               <li className="text-sm text-metal-200">Ängelholm</li>
-              <li className="text-sm text-metal-200">Kävlinge</li>
               <li className="text-sm text-metal-200">Bjuv</li>
             </ul>
           </div>
