@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useSupabaseProjects, Project } from '../../hooks/useSupabaseProjects';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AdminProjectFormProps {
   initialProject?: Project;
@@ -39,22 +40,46 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
 
       setImageFile(file);
       
-      // Convert to base64 for preview and storage
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      // Skapa preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImage(previewUrl);
+    }
+  };
+
+  const uploadImageToStorage = async (file: File): Promise<string | null> => {
+    try {
+      // Skapa unikt filnamn
+      const fileExtension = file.name.split('.').pop() || 'jpg';
+      const fileName = `project-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
+      const storagePath = `projects/${fileName}`;
+
+      // Ladda upp till Storage
+      const { error: uploadError } = await supabase.storage
+        .from('project-images')
+        .upload(storagePath, file, {
+          contentType: file.type,
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        return null;
+      }
+
+      return storagePath;
+    } catch (error) {
+      console.error('Error uploading to storage:', error);
+      return null;
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title.trim() || !description.trim() || !category || !image) {
+    if (!title.trim() || !description.trim() || !category) {
       toast({
         title: "Ofullständig information",
-        description: "Alla fält måste fyllas i.",
+        description: "Titel, beskrivning och kategori måste fyllas i.",
         variant: "destructive",
       });
       return;
@@ -63,13 +88,38 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
     setIsSubmitting(true);
 
     try {
+      let finalImageData = image;
+      let storagePath = null;
+
+      // Om en ny fil har laddats upp, ladda upp den till Storage
+      if (imageFile) {
+        storagePath = await uploadImageToStorage(imageFile);
+        if (!storagePath) {
+          toast({
+            title: "Uppladdningsfel",
+            description: "Kunde inte ladda upp bilden. Försök igen.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Hämta public URL för Storage-bilden
+        const { data: { publicUrl } } = supabase.storage
+          .from('project-images')
+          .getPublicUrl(storagePath);
+        
+        finalImageData = publicUrl;
+      }
+
       if (initialProject) {
         // Update existing project
         const success = await updateProject(initialProject.id, {
           title: title.trim(),
           description: description.trim(),
           category,
-          image,
+          image: finalImageData,
+          // Lägg till storage_path om vi har en
+          ...(storagePath && { storage_path: storagePath })
         });
         
         if (success && onComplete) {
@@ -77,12 +127,16 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
         }
       } else {
         // Add new project
-        const newProject = await addProject({
+        const projectData = {
           title: title.trim(),
           description: description.trim(),
           category,
-          image,
-        });
+          image: finalImageData || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop',
+          // Lägg till storage_path om vi har en
+          ...(storagePath && { storage_path: storagePath })
+        };
+
+        const newProject = await addProject(projectData);
         
         if (newProject) {
           // Reset form

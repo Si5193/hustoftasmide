@@ -14,15 +14,6 @@ export const useProjectImage = (projectId: number | null) => {
       return;
     }
 
-    // För tillfället, hoppa över bildladdning helt och visa placeholder
-    // Detta undviker timeout-problem med stora base64-bilder
-    console.log(`Skipping image load for project ${projectId} - using placeholder`);
-    setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop'); // Placeholder från projektet
-    setLoading(false);
-    setError(false);
-
-    // Kommenterad kod för framtida användning när vi migrerat till Storage:
-    /*
     const fetchImage = async () => {
       try {
         setLoading(true);
@@ -30,7 +21,7 @@ export const useProjectImage = (projectId: number | null) => {
         
         const { data, error: fetchError } = await supabase
           .from('projects')
-          .select('image_url')
+          .select('image_url, storage_path')
           .eq('id', projectId)
           .single();
 
@@ -38,18 +29,37 @@ export const useProjectImage = (projectId: number | null) => {
           throw fetchError;
         }
 
-        setImageUrl(data.image_url || null);
+        // Prioritera Storage-bild om den finns
+        if (data.storage_path) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('project-images')
+            .getPublicUrl(data.storage_path);
+          
+          setImageUrl(publicUrl);
+        } else if (data.image_url) {
+          // Fallback till base64 om Storage-bild inte finns
+          if (data.image_url.startsWith('data:')) {
+            // För stora base64-bilder, använd placeholder tills migration är klar
+            console.log(`Project ${projectId} har fortfarande base64-bild, använder placeholder`);
+            setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
+          } else {
+            setImageUrl(data.image_url);
+          }
+        } else {
+          // Ingen bild finns
+          setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
+        }
+
       } catch (error) {
         console.error('Error fetching project image:', error);
         setError(true);
-        setImageUrl(null);
+        setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
       } finally {
         setLoading(false);
       }
     };
 
     fetchImage();
-    */
   }, [projectId]);
 
   return {

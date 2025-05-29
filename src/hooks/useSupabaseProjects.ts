@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +8,7 @@ export interface Project {
   description: string;
   category: string;
   image: string;
+  storage_path?: string;
 }
 
 // Map Supabase data to our Project interface (without image for listing)
@@ -17,6 +17,7 @@ const mapSupabaseProjectList = (dbProject: any): Omit<Project, 'image'> => ({
   title: dbProject.title,
   description: dbProject.description,
   category: dbProject.category,
+  storage_path: dbProject.storage_path,
 });
 
 // Map Supabase data to our Project interface (with image for single project)
@@ -26,6 +27,7 @@ const mapSupabaseProject = (dbProject: any): Project => ({
   description: dbProject.description,
   category: dbProject.category,
   image: dbProject.image_url,
+  storage_path: dbProject.storage_path,
 });
 
 // Map our Project interface to Supabase data
@@ -34,6 +36,7 @@ const mapToSupabaseProject = (project: Omit<Project, 'id'>) => ({
   description: project.description,
   category: project.category,
   image_url: project.image,
+  storage_path: project.storage_path,
 });
 
 export const useSupabaseProjects = () => {
@@ -49,10 +52,10 @@ export const useSupabaseProjects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      // Exclude image_url from the initial query to avoid timeout
+      // Inkludera storage_path för att hantera Storage-bilder
       const { data, error } = await supabase
         .from('projects')
-        .select('id, title, description, category, created_at')
+        .select('id, title, description, category, storage_path, created_at')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -65,11 +68,24 @@ export const useSupabaseProjects = () => {
         return;
       }
 
-      // Map projects without images (they'll be loaded on demand)
-      const mappedProjects = data.map(dbProject => ({
-        ...mapSupabaseProjectList(dbProject),
-        image: '' // Placeholder, will be loaded when needed
-      }));
+      // Map projects och sätt image baserat på storage_path eller fallback
+      const mappedProjects = data.map(dbProject => {
+        let imageUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
+        
+        if (dbProject.storage_path) {
+          // Hämta public URL från Storage
+          const { data: { publicUrl } } = supabase.storage
+            .from('project-images')
+            .getPublicUrl(dbProject.storage_path);
+          imageUrl = publicUrl;
+        }
+
+        return {
+          ...mapSupabaseProjectList(dbProject),
+          image: imageUrl
+        };
+      });
+      
       setProjects(mappedProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -128,6 +144,7 @@ export const useSupabaseProjects = () => {
       if (updates.description) updateData.description = updates.description;
       if (updates.category) updateData.category = updates.category;
       if (updates.image) updateData.image_url = updates.image;
+      if (updates.storage_path) updateData.storage_path = updates.storage_path;
 
       const { error } = await supabase
         .from('projects')
