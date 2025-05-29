@@ -19,24 +19,39 @@ export const useProjectImage = (projectId: number | null) => {
         setLoading(true);
         setError(false);
         
-        const { data, error: fetchError } = await supabase
+        // Försök hämta med storage_path först, fallback till bara image_url
+        let query = supabase
           .from('projects')
-          .select('image_url, storage_path')
+          .select('image_url')
           .eq('id', projectId)
           .single();
+
+        // Försök inkludera storage_path om kolumnen finns
+        try {
+          query = supabase
+            .from('projects')
+            .select('image_url, storage_path')
+            .eq('id', projectId)
+            .single();
+        } catch (error) {
+          // storage_path kolumn finns inte, använd bara image_url
+          console.log('storage_path column not available, using image_url only');
+        }
+
+        const { data, error: fetchError } = await query;
 
         if (fetchError) {
           throw fetchError;
         }
 
-        // Prioritera Storage-bild om den finns
-        if (data.storage_path) {
+        // Prioritera Storage-bild om den finns och storage_path kolumnen existerar
+        if (data && 'storage_path' in data && data.storage_path) {
           const { data: { publicUrl } } = supabase.storage
             .from('project-images')
             .getPublicUrl(data.storage_path);
           
           setImageUrl(publicUrl);
-        } else if (data.image_url) {
+        } else if (data && data.image_url) {
           // Fallback till base64 om Storage-bild inte finns
           if (data.image_url.startsWith('data:')) {
             // För stora base64-bilder, använd placeholder tills migration är klar

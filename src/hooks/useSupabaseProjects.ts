@@ -31,13 +31,21 @@ const mapSupabaseProject = (dbProject: any): Project => ({
 });
 
 // Map our Project interface to Supabase data
-const mapToSupabaseProject = (project: Omit<Project, 'id'>) => ({
-  title: project.title,
-  description: project.description,
-  category: project.category,
-  image_url: project.image,
-  storage_path: project.storage_path,
-});
+const mapToSupabaseProject = (project: Omit<Project, 'id'>) => {
+  const supabaseProject: any = {
+    title: project.title,
+    description: project.description,
+    category: project.category,
+    image_url: project.image,
+  };
+  
+  // Endast inkludera storage_path om den finns
+  if (project.storage_path) {
+    supabaseProject.storage_path = project.storage_path;
+  }
+  
+  return supabaseProject;
+};
 
 export const useSupabaseProjects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -52,10 +60,26 @@ export const useSupabaseProjects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      // Inkludera storage_path för att hantera Storage-bilder
+      
+      // Försök hämta med storage_path, fallback till utan
+      let selectFields = 'id, title, description, category, created_at';
+      
+      try {
+        // Testa om storage_path kolumnen finns
+        const { data: testData } = await supabase
+          .from('projects')
+          .select('storage_path')
+          .limit(1);
+        
+        // Om ingen error, inkludera storage_path
+        selectFields = 'id, title, description, category, storage_path, created_at';
+      } catch (error) {
+        console.log('storage_path column not available yet');
+      }
+
       const { data, error } = await supabase
         .from('projects')
-        .select('id, title, description, category, storage_path, created_at')
+        .select(selectFields)
         .order('created_at', { ascending: false });
 
       if (error) {
