@@ -1,6 +1,7 @@
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Project } from '../../hooks/useSupabaseProjects';
+import { useProjectImage } from '../../hooks/useProjectImage';
 import ShareButton from '../ui/share-button';
 
 interface ProjectModalProps {
@@ -28,7 +29,13 @@ const ProjectModal = ({
   onNavigate,
   onBackdropClick
 }: ProjectModalProps) => {
+  const { imageUrl, loading: imageLoading, error: imageLoadError } = useProjectImage(selectedProject?.id || null);
+  
   if (!selectedProject) return null;
+  
+  const hasImageError = imageError[selectedProject.id] || imageLoadError;
+  const isImageLoaded = imagesLoaded[selectedProject.id] && imageUrl;
+  const projectWithImage = { ...selectedProject, image: imageUrl || '' };
   
   return (
     <div 
@@ -48,27 +55,29 @@ const ProjectModal = ({
         
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-1/2 h-52 sm:h-60 md:h-72">
-            {imageError[selectedProject.id] ? (
+            {hasImageError ? (
               <div className="flex h-full w-full flex-col items-center justify-center bg-metal-200 p-4">
                 <p className="text-metal-500">Bild saknas</p>
-                <p className="text-xs text-metal-400 mt-1 text-center break-all">{selectedProject.image}</p>
+                <p className="text-xs text-metal-400 mt-1 text-center break-all">{imageUrl}</p>
               </div>
             ) : (
               <div className="relative h-full w-full">
-                {!imagesLoaded[selectedProject.id] && (
+                {(!isImageLoaded || imageLoading) && (
                   <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
                   </div>
                 )}
-                <img 
-                  src={selectedProject.image} 
-                  alt={selectedProject.title}
-                  className={`h-full w-full object-contain ${
-                    imagesLoaded[selectedProject.id] ? 'opacity-100' : 'opacity-0'
-                  }`}
-                  onError={() => onImageError(selectedProject.id)}
-                  onLoad={() => onImageLoad(selectedProject.id)}
-                />
+                {imageUrl && (
+                  <img 
+                    src={imageUrl} 
+                    alt={selectedProject.title}
+                    className={`h-full w-full object-contain ${
+                      isImageLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onError={() => onImageError(selectedProject.id)}
+                    onLoad={() => onImageLoad(selectedProject.id)}
+                  />
+                )}
               </div>
             )}
           </div>
@@ -85,7 +94,7 @@ const ProjectModal = ({
               <ShareButton
                 title={selectedProject.title}
                 description={selectedProject.description}
-                imageUrl={selectedProject.image}
+                imageUrl={imageUrl || ''}
               />
             </div>
           </div>

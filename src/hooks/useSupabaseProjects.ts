@@ -11,7 +11,15 @@ export interface Project {
   image: string;
 }
 
-// Map Supabase data to our Project interface
+// Map Supabase data to our Project interface (without image for listing)
+const mapSupabaseProjectList = (dbProject: any): Omit<Project, 'image'> => ({
+  id: dbProject.id,
+  title: dbProject.title,
+  description: dbProject.description,
+  category: dbProject.category,
+});
+
+// Map Supabase data to our Project interface (with image for single project)
 const mapSupabaseProject = (dbProject: any): Project => ({
   id: dbProject.id,
   title: dbProject.title,
@@ -41,9 +49,10 @@ export const useSupabaseProjects = () => {
   const fetchProjects = async () => {
     try {
       setLoading(true);
+      // Exclude image_url from the initial query to avoid timeout
       const { data, error } = await supabase
         .from('projects')
-        .select('*')
+        .select('id, title, description, category, created_at')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -56,7 +65,11 @@ export const useSupabaseProjects = () => {
         return;
       }
 
-      const mappedProjects = data.map(mapSupabaseProject);
+      // Map projects without images (they'll be loaded on demand)
+      const mappedProjects = data.map(dbProject => ({
+        ...mapSupabaseProjectList(dbProject),
+        image: '' // Placeholder, will be loaded when needed
+      }));
       setProjects(mappedProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);

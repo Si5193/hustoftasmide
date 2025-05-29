@@ -1,6 +1,7 @@
 
 import { Plus } from 'lucide-react';
 import { Project } from '../../hooks/useSupabaseProjects';
+import { useProjectImage } from '../../hooks/useProjectImage';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ProjectCardProps {
@@ -23,35 +24,45 @@ const ProjectCard = ({
   onImageLoad
 }: ProjectCardProps) => {
   const isMobile = useIsMobile();
+  const { imageUrl, loading: imageLoading, error: imageLoadError } = useProjectImage(project.id);
+  
+  // Update project with loaded image
+  const projectWithImage = { ...project, image: imageUrl || '' };
+  
+  // Handle image states
+  const hasImageError = imageError[project.id] || imageLoadError;
+  const isImageLoaded = imagesLoaded[project.id] && imageUrl;
   
   return (
     <div 
       key={project.id}
       className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg min-h-[120px] md:min-h-[200px]"
-      onClick={() => onOpenProject(project, index)}
+      onClick={() => onOpenProject(projectWithImage, index)}
     >
       <div className="aspect-square overflow-hidden">
-        {imageError[project.id] ? (
+        {hasImageError ? (
           <div className="flex flex-col h-full w-full items-center justify-center bg-metal-200 p-2 md:p-4">
             <p className="text-xs md:text-sm text-metal-500">Bild saknas</p>
           </div>
         ) : (
           <div className="relative h-full w-full">
-            {!imagesLoaded[project.id] && (
+            {(!isImageLoaded || imageLoading) && (
               <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
                 <div className="h-4 w-4 md:h-8 md:w-8 animate-spin rounded-full border-2 md:border-4 border-metal-300 border-t-metal-500"></div>
               </div>
             )}
-            <img
-              src={project.image}
-              alt={project.title}
-              className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
-                imagesLoaded[project.id] ? 'opacity-100' : 'opacity-0'
-              }`}
-              onError={() => onImageError(project.id)}
-              onLoad={() => onImageLoad(project.id)}
-              loading="lazy"
-            />
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt={project.title}
+                className={`h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 ${
+                  isImageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
+                onError={() => onImageError(project.id)}
+                onLoad={() => onImageLoad(project.id)}
+                loading="lazy"
+              />
+            )}
           </div>
         )}
       </div>
