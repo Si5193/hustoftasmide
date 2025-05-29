@@ -1,9 +1,10 @@
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useImageMigration } from '../../hooks/useImageMigration';
 import { useStorageSetup } from '../../hooks/useStorageSetup';
-import { Upload, CheckCircle, Database, Pause, Play, RotateCcw, AlertTriangle, Folder } from 'lucide-react';
+import { Upload, CheckCircle, Database, Pause, Play, RotateCcw, AlertTriangle, Folder, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -18,7 +19,7 @@ const ImageMigrationPanel = () => {
     resetMigration 
   } = useImageMigration();
   
-  const { bucketExists, checking: checkingBucket, createBucket } = useStorageSetup();
+  const { bucketExists, checking: checkingBucket } = useStorageSetup();
   
   const [migrationStats, setMigrationStats] = useState({
     total: 0,
@@ -26,7 +27,6 @@ const ImageMigrationPanel = () => {
     storageImages: 0,
     loading: true
   });
-  const [batchSize, setBatchSize] = useState(2);
 
   useEffect(() => {
     const fetchMigrationStats = async () => {
@@ -65,7 +65,8 @@ const ImageMigrationPanel = () => {
   }, [migrating, progress.status, bucketExists]);
 
   const needsMigration = migrationStats.base64Images > 0;
-  const progressPercentage = progress.total > 0 ? Math.round((progress.completed + progress.failed) / progress.total * 100) : 0;
+  const totalProcessed = progress.completed + progress.failed + progress.skipped;
+  const progressPercentage = progress.total > 0 ? Math.round(totalProcessed / progress.total * 100) : 0;
   const canStartMigration = bucketExists && needsMigration && progress.status === 'idle';
 
   const getStatusColor = () => {
@@ -93,14 +94,14 @@ const ImageMigrationPanel = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload size={20} />
-          Avancerad Bildmigrering till Storage
+          Optimerad Bildmigrering till Storage
         </CardTitle>
         <CardDescription>
-          Migrera befintliga base64-bilder till Supabase Storage med förbättrad felhantering och batch-bearbetning.
+          Migrera base64-bilder till Supabase Storage med förbättrad stabilitet och timeout-hantering.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Storage Setup Warning */}
+        {/* Storage Status */}
         {!checkingBucket && !bucketExists && (
           <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
@@ -109,13 +110,23 @@ const ImageMigrationPanel = () => {
                 Storage bucket saknas
               </span>
             </div>
-            <p className="text-yellow-700 text-sm mb-3">
-              Du behöver skapa en storage bucket för projektbilder innan migreringen kan starta.
+            <p className="text-yellow-700 text-sm">
+              Storage bucket:en ska ha skapats automatiskt. Om den saknas, kontakta support.
             </p>
-            <Button onClick={createBucket} size="sm" className="flex items-center gap-2">
-              <Folder size={16} />
-              Skapa Storage Bucket
-            </Button>
+          </div>
+        )}
+
+        {bucketExists && (
+          <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="text-green-600" size={20} />
+              <span className="text-green-800 font-medium">
+                Storage bucket är klar!
+              </span>
+            </div>
+            <p className="text-green-700 text-sm">
+              Bucket "project-images" är skapad och redo för migration.
+            </p>
           </div>
         )}
 
@@ -134,7 +145,7 @@ const ImageMigrationPanel = () => {
           <div className="bg-orange-50 p-3 rounded-lg">
             <div className="flex items-center gap-2">
               <Upload size={16} className="text-orange-600" />
-              <span className="text-sm font-medium text-orange-800">Base64-bilder</span>
+              <span className="text-sm font-medium text-orange-800">Behöver migreras</span>
             </div>
             <p className="text-2xl font-bold text-orange-900">
               {migrationStats.loading ? '...' : migrationStats.base64Images}
@@ -144,7 +155,7 @@ const ImageMigrationPanel = () => {
           <div className="bg-green-50 p-3 rounded-lg">
             <div className="flex items-center gap-2">
               <CheckCircle size={16} className="text-green-600" />
-              <span className="text-sm font-medium text-green-800">Storage-bilder</span>
+              <span className="text-sm font-medium text-green-800">Redan migrerade</span>
             </div>
             <p className="text-2xl font-bold text-green-900">
               {migrationStats.loading ? '...' : migrationStats.storageImages}
@@ -152,26 +163,20 @@ const ImageMigrationPanel = () => {
           </div>
         </div>
 
-        {/* Migration Settings */}
+        {/* Optimization Notice */}
         {canStartMigration && (
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-medium mb-3">Migreringsinställningar</h4>
-            <div className="flex items-center gap-4">
-              <label className="text-sm font-medium">Batch-storlek:</label>
-              <select 
-                value={batchSize} 
-                onChange={(e) => setBatchSize(Number(e.target.value))}
-                className="border rounded px-2 py-1 text-sm"
-              >
-                <option value={1}>1 bild åt gången (säkrast)</option>
-                <option value={2}>2 bilder åt gången (rekommenderat)</option>
-                <option value={3}>3 bilder åt gången</option>
-                <option value={5}>5 bilder åt gången</option>
-              </select>
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h4 className="font-medium mb-2 flex items-center gap-2">
+              <Clock size={16} className="text-blue-600" />
+              Optimerad Migration
+            </h4>
+            <div className="text-sm text-blue-700 space-y-1">
+              <p>• <strong>En bild åt gången:</strong> Förhindrar database timeouts</p>
+              <p>• <strong>3 sekunders paus:</strong> Mellan varje bild för stabilitet</p>
+              <p>• <strong>8MB storleksgräns:</strong> För stora bilder hoppas över automatiskt</p>
+              <p>• <strong>Automatisk verifiering:</strong> Kontrollerar att uppladdning lyckades</p>
+              <p>• <strong>Smart återförsök:</strong> Försöker igen vid tillfälliga fel</p>
             </div>
-            <p className="text-xs text-gray-600 mt-2">
-              Mindre batch-storlek = stabilare men långsammare. Större = snabbare men risk för timeout.
-            </p>
           </div>
         )}
 
@@ -207,7 +212,7 @@ const ImageMigrationPanel = () => {
             
             <Progress value={progressPercentage} className="w-full" />
             
-            <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="grid grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="text-gray-600">Slutförda:</span>
                 <span className="ml-1 font-medium text-green-600">{progress.completed}</span>
@@ -215,6 +220,10 @@ const ImageMigrationPanel = () => {
               <div>
                 <span className="text-gray-600">Misslyckade:</span>
                 <span className="ml-1 font-medium text-red-600">{progress.failed}</span>
+              </div>
+              <div>
+                <span className="text-gray-600">Hoppade över:</span>
+                <span className="ml-1 font-medium text-yellow-600">{progress.skipped}</span>
               </div>
               <div>
                 <span className="text-gray-600">Totalt:</span>
@@ -234,14 +243,14 @@ const ImageMigrationPanel = () => {
         <div className="flex gap-3">
           {progress.status === 'idle' && (
             <Button 
-              onClick={() => migrateProjectImages(batchSize)} 
+              onClick={() => migrateProjectImages()} 
               disabled={migrating || !canStartMigration}
               className="flex items-center gap-2"
             >
               <Upload size={16} />
               {bucketExists ? 
-                `Starta migration (${migrationStats.base64Images} bilder)` : 
-                'Skapa bucket först'
+                `Starta optimerad migration (${migrationStats.base64Images} bilder)` : 
+                'Väntar på storage bucket'
               }
             </Button>
           )}
@@ -280,10 +289,11 @@ const ImageMigrationPanel = () => {
         </div>
 
         <div className="text-sm text-gray-600 space-y-1">
-          <p>• <strong>Förbättrad version:</strong> Batch-bearbetning, retry-logik och timeout-hantering</p>
-          <p>• <strong>Säker:</strong> Verifierar uppladdningar innan databasuppdatering</p>
+          <p>• <strong>Optimerad för stabilitet:</strong> En bild åt gången med pauser</p>
+          <p>• <strong>Intelligent storlekskontroll:</strong> Hoppar över för stora bilder (>8MB)</p>
+          <p>• <strong>Säker:</strong> Verifierar varje uppladdning innan databasuppdatering</p>
           <p>• <strong>Pausbar:</strong> Kan pausas och återupptas när som helst</p>
-          <p>• <strong>Robust:</strong> Automatisk återförsök vid misslyckade uppladdningar</p>
+          <p>• <strong>Smart återförsök:</strong> Automatiska omförsök vid tillfälliga fel</p>
           {needsMigration && bucketExists && (
             <p className="text-orange-600 font-medium">
               • {migrationStats.base64Images} bilder behöver migreras för optimal prestanda

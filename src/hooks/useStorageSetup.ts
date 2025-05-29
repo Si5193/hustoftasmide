@@ -25,8 +25,10 @@ export const useStorageSetup = () => {
       const projectImagesBucket = data?.find(bucket => bucket.name === 'project-images');
       setBucketExists(!!projectImagesBucket);
       
-      if (!projectImagesBucket) {
-        console.log('project-images bucket does not exist, will need to create it');
+      if (projectImagesBucket) {
+        console.log('✅ project-images bucket exists and is ready');
+      } else {
+        console.log('❌ project-images bucket does not exist');
       }
       
     } catch (error) {
@@ -37,39 +39,11 @@ export const useStorageSetup = () => {
   };
 
   const createBucket = async () => {
-    try {
-      const { error } = await supabase.storage.createBucket('project-images', {
-        public: true,
-        allowedMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-        fileSizeLimit: 10485760 // 10MB
-      });
-
-      if (error) {
-        console.error('Error creating bucket:', error);
-        toast({
-          title: "Fel",
-          description: "Kunde inte skapa storage bucket. Kontakta administratören.",
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      setBucketExists(true);
-      toast({
-        title: "Bucket skapad",
-        description: "Storage bucket för projektbilder har skapats.",
-      });
-      
-      return true;
-    } catch (error) {
-      console.error('Error creating bucket:', error);
-      toast({
-        title: "Fel",
-        description: "Något gick fel när bucket skulle skapas.",
-        variant: "destructive",
-      });
-      return false;
-    }
+    toast({
+      title: "Bucket skapas automatiskt",
+      description: "Storage bucket skapas via SQL-migrering istället för applikationen.",
+    });
+    return false;
   };
 
   return {

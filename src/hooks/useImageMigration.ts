@@ -7,6 +7,7 @@ interface MigrationProgress {
   total: number;
   completed: number;
   failed: number;
+  skipped: number;
   current: string;
   status: 'idle' | 'running' | 'paused' | 'completed' | 'error';
 }
@@ -17,6 +18,7 @@ export const useImageMigration = () => {
     total: 0,
     completed: 0,
     failed: 0,
+    skipped: 0,
     current: '',
     status: 'idle'
   });
@@ -25,45 +27,65 @@ export const useImageMigration = () => {
 
   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  const calculateImageSize = (base64Data: string): number => {
+    // Calculate approximate size in bytes from base64
+    return Math.round((base64Data.length * 3) / 4);
+  };
+
   const uploadImageWithRetry = async (
     base64Data: string, 
     mimeType: string, 
     storagePath: string, 
-    maxRetries = 3
+    maxRetries = 2
   ): Promise<boolean> => {
+    // Check image size first (skip if over 8MB to prevent timeouts)
+    const imageSizeBytes = calculateImageSize(base64Data);
+    const maxSizeBytes = 8 * 1024 * 1024; // 8MB limit
+    
+    if (imageSizeBytes > maxSizeBytes) {
+      console.log(`Skipping oversized image: ${Math.round(imageSizeBytes / 1024 / 1024)}MB`);
+      return false;
+    }
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        // Konvertera base64 till blob
+        // Convert base64 to blob with smaller chunks for large images
         const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
+        const chunkSize = 1024 * 512; // 512KB chunks
+        const chunks = [];
         
-        for (let j = 0; j < byteCharacters.length; j++) {
-          byteNumbers[j] = byteCharacters.charCodeAt(j);
+        for (let offset = 0; offset < byteCharacters.length; offset += chunkSize) {
+          const chunk = byteCharacters.slice(offset, offset + chunkSize);
+          const byteNumbers = new Array(chunk.length);
+          for (let i = 0; i < chunk.length; i++) {
+            byteNumbers[i] = chunk.charCodeAt(i);
+          }
+          chunks.push(new Uint8Array(byteNumbers));
         }
         
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: mimeType });
+        const blob = new Blob(chunks, { type: mimeType });
 
-        // Ladda upp till Storage med längre timeout
+        // Upload to Storage with optimized settings
         const { error: uploadError } = await supabase.storage
           .from('project-images')
           .upload(storagePath, blob, {
             contentType: mimeType,
-            upsert: false
+            upsert: false,
+            duplex: 'half' // Optimize for upload performance
           });
 
         if (uploadError) {
-          console.error(`Uppladdningsfel (försök ${attempt}/${maxRetries}):`, uploadError);
+          console.error(`Upload error (attempt ${attempt}/${maxRetries}):`, uploadError);
           if (attempt === maxRetries) return false;
-          await delay(1000 * attempt); // Exponential backoff
+          await delay(2000 * attempt); // Progressive backoff
           continue;
         }
 
         return true;
       } catch (error) {
-        console.error(`Fel vid uppladdning (försök ${attempt}/${maxRetries}):`, error);
+        console.error(`Upload exception (attempt ${attempt}/${maxRetries}):`, error);
         if (attempt === maxRetries) return false;
-        await delay(1000 * attempt);
+        await delay(2000 * attempt);
       }
     }
     return false;
@@ -72,7 +94,7 @@ export const useImageMigration = () => {
   const updateProjectWithRetry = async (
     projectId: number, 
     storagePath: string, 
-    maxRetries = 3
+    maxRetries = 2
   ): Promise<boolean> => {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
@@ -82,17 +104,17 @@ export const useImageMigration = () => {
           .eq('id', projectId);
 
         if (updateError) {
-          console.error(`Databasuppdateringsfel (försök ${attempt}/${maxRetries}):`, updateError);
+          console.error(`Database update error (attempt ${attempt}/${maxRetries}):`, updateError);
           if (attempt === maxRetries) return false;
-          await delay(500 * attempt);
+          await delay(1000 * attempt);
           continue;
         }
 
         return true;
       } catch (error) {
-        console.error(`Fel vid databasuppdatering (försök ${attempt}/${maxRetries}):`, error);
+        console.error(`Database update exception (attempt ${attempt}/${maxRetries}):`, error);
         if (attempt === maxRetries) return false;
-        await delay(500 * attempt);
+        await delay(1000 * attempt);
       }
     }
     return false;
@@ -104,27 +126,37 @@ export const useImageMigration = () => {
         .from('project-images')
         .getPublicUrl(storagePath);
       
-      // Testa att ladda bilden
-      const response = await fetch(publicUrl, { method: 'HEAD' });
+      // Quick HEAD request to verify file exists
+      const response = await fetch(publicUrl, { 
+        method: 'HEAD',
+        cache: 'no-cache'
+      });
       return response.ok;
     } catch (error) {
-      console.error('Fel vid verifiering av uppladdad bild:', error);
+      console.error('Error verifying uploaded image:', error);
       return false;
     }
   };
 
-  const migrateProjectImages = async (batchSize = 2) => {
+  const migrateProjectImages = async () => {
     try {
       setMigrating(true);
       setIsPaused(false);
-      setProgress(prev => ({ ...prev, status: 'running', completed: 0, failed: 0 }));
+      setProgress(prev => ({ 
+        ...prev, 
+        status: 'running', 
+        completed: 0, 
+        failed: 0, 
+        skipped: 0 
+      }));
 
-      // Hämta alla projekt med base64-bilder som inte redan har storage_path
+      // Fetch projects with base64 images that need migration
       const { data: projects, error: fetchError } = await supabase
         .from('projects')
         .select('id, title, image_url, storage_path')
         .like('image_url', 'data:%')
-        .is('storage_path', null);
+        .is('storage_path', null)
+        .order('id', { ascending: true }); // Process in consistent order
 
       if (fetchError) {
         throw fetchError;
@@ -145,94 +177,101 @@ export const useImageMigration = () => {
         status: 'running'
       }));
 
-      console.log(`Startar migrering av ${projects.length} bilder i batches om ${batchSize}...`);
+      console.log(`Starting migration of ${projects.length} images (one at a time)...`);
 
-      // Bearbeta i batches
-      for (let i = 0; i < projects.length; i += batchSize) {
+      // Process ONE image at a time to prevent timeouts
+      for (let i = 0; i < projects.length; i++) {
         if (isPaused) {
           setProgress(prev => ({ ...prev, status: 'paused' }));
           break;
         }
 
-        const batch = projects.slice(i, i + batchSize);
-        console.log(`Bearbetar batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(projects.length / batchSize)}`);
+        const project = projects[i];
+        
+        setProgress(prev => ({ 
+          ...prev, 
+          current: project.title 
+        }));
 
-        for (const project of batch) {
-          if (isPaused) break;
+        try {
+          console.log(`\n--- Migrating project ${i + 1}/${projects.length}: "${project.title}" ---`);
+          
+          const base64Data = project.image_url.split(',')[1];
+          const mimeType = project.image_url.split(';')[0].split(':')[1];
+          
+          // Check and log image size
+          const imageSizeKB = Math.round(calculateImageSize(base64Data) / 1024);
+          console.log(`Image size: ${imageSizeKB} KB`);
+
+          // Skip oversized images
+          if (imageSizeKB > 8000) { // 8MB limit
+            console.log(`⚠️ Skipping oversized image: ${imageSizeKB} KB`);
+            setProgress(prev => ({ ...prev, skipped: prev.skipped + 1 }));
+            continue;
+          }
+
+          // Determine file extension
+          const fileExtension = mimeType.includes('jpeg') ? '.jpg' :
+                               mimeType.includes('png') ? '.png' :
+                               mimeType.includes('gif') ? '.gif' :
+                               mimeType.includes('webp') ? '.webp' : '.jpg';
+
+          const fileName = `project-${project.id}-${Date.now()}${fileExtension}`;
+          const storagePath = `projects/${fileName}`;
+
+          // Upload with retry logic
+          console.log('🔄 Uploading to Storage...');
+          const uploadSuccess = await uploadImageWithRetry(base64Data, mimeType, storagePath);
+          
+          if (!uploadSuccess) {
+            console.error(`❌ Failed to upload image for project ${project.id}`);
+            setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
+            continue;
+          }
+
+          // Verify upload
+          console.log('✅ Upload successful, verifying...');
+          const verifySuccess = await verifyUploadedImage(storagePath);
+          if (!verifySuccess) {
+            console.error(`❌ Failed to verify uploaded image for project ${project.id}`);
+            // Clean up failed upload
+            await supabase.storage.from('project-images').remove([storagePath]);
+            setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
+            continue;
+          }
+
+          // Update database
+          console.log('💾 Updating database...');
+          const updateSuccess = await updateProjectWithRetry(project.id, storagePath);
+          
+          if (!updateSuccess) {
+            console.error(`❌ Failed to update project ${project.id} in database`);
+            // Clean up uploaded file if database update failed
+            await supabase.storage.from('project-images').remove([storagePath]);
+            setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
+            continue;
+          }
 
           setProgress(prev => ({ 
             ...prev, 
-            current: project.title 
+            completed: prev.completed + 1 
           }));
 
-          try {
-            const base64Data = project.image_url.split(',')[1];
-            const mimeType = project.image_url.split(';')[0].split(':')[1];
-            
-            // Kontrollera bildstorlek
-            const imageSizeKB = Math.round((base64Data.length * 3) / 4 / 1024);
-            console.log(`Migrerar "${project.title}" (${imageSizeKB} KB)`);
+          console.log(`✅ Successfully migrated project ${project.id}: ${storagePath}`);
 
-            // Bestäm filtyp
-            const fileExtension = mimeType.includes('jpeg') ? '.jpg' :
-                                 mimeType.includes('png') ? '.png' :
-                                 mimeType.includes('gif') ? '.gif' :
-                                 mimeType.includes('webp') ? '.webp' : '.jpg';
-
-            const fileName = `project-${project.id}-${Date.now()}${fileExtension}`;
-            const storagePath = `projects/${fileName}`;
-
-            // Ladda upp med retry
-            const uploadSuccess = await uploadImageWithRetry(base64Data, mimeType, storagePath);
-            
-            if (!uploadSuccess) {
-              console.error(`Misslyckades att ladda upp bild för projekt ${project.id}`);
-              setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
-              continue;
-            }
-
-            // Verifiera att bilden laddades upp korrekt
-            const verifySuccess = await verifyUploadedImage(storagePath);
-            if (!verifySuccess) {
-              console.error(`Misslyckades att verifiera uppladdad bild för projekt ${project.id}`);
-              // Ta bort den misslyckade uppladdningen
-              await supabase.storage.from('project-images').remove([storagePath]);
-              setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
-              continue;
-            }
-
-            // Uppdatera projektet med retry
-            const updateSuccess = await updateProjectWithRetry(project.id, storagePath);
-            
-            if (!updateSuccess) {
-              console.error(`Misslyckades att uppdatera projekt ${project.id} i databasen`);
-              // Ta bort den uppladdade filen om databasuppdateringen misslyckades
-              await supabase.storage.from('project-images').remove([storagePath]);
-              setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
-              continue;
-            }
-
-            setProgress(prev => ({ 
-              ...prev, 
-              completed: prev.completed + 1 
-            }));
-
-            console.log(`✅ Migrerade projekt ${project.id}: ${storagePath}`);
-
-          } catch (error) {
-            console.error(`Fel vid migrering av projekt ${project.id}:`, error);
-            setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
-          }
+        } catch (error) {
+          console.error(`❌ Error migrating project ${project.id}:`, error);
+          setProgress(prev => ({ ...prev, failed: prev.failed + 1 }));
         }
 
-        // Paus mellan batches för att undvika överbelastning
-        if (i + batchSize < projects.length && !isPaused) {
-          console.log('Pausar 2 sekunder mellan batches...');
-          await delay(2000);
+        // Longer pause between each image to prevent database overload
+        if (i < projects.length - 1 && !isPaused) {
+          console.log('⏸️ Pausing 3 seconds before next image...');
+          await delay(3000);
         }
       }
 
-      const finalProgress = progress.completed + progress.failed;
+      const finalProgress = progress.completed + progress.failed + progress.skipped;
       const isCompleted = finalProgress >= projects.length && !isPaused;
       
       setProgress(prev => ({ 
@@ -242,15 +281,17 @@ export const useImageMigration = () => {
       }));
 
       if (isCompleted) {
+        const message = `${progress.completed} bilder migrerade framgångsrikt.${progress.failed > 0 ? ` ${progress.failed} misslyckades.` : ''}${progress.skipped > 0 ? ` ${progress.skipped} hoppades över (för stora).` : ''}`;
+        
         toast({
           title: "Migration slutförd",
-          description: `${progress.completed} bilder migrerade framgångsrikt. ${progress.failed > 0 ? `${progress.failed} misslyckades.` : ''}`,
+          description: message,
           variant: progress.failed > 0 ? "destructive" : "default"
         });
       }
 
     } catch (error) {
-      console.error('Fel vid bildmigrering:', error);
+      console.error('Fatal migration error:', error);
       setProgress(prev => ({ ...prev, status: 'error' }));
       toast({
         title: "Migreringsfel",
@@ -278,6 +319,7 @@ export const useImageMigration = () => {
       total: 0,
       completed: 0,
       failed: 0,
+      skipped: 0,
       current: '',
       status: 'idle'
     });
