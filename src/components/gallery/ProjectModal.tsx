@@ -34,7 +34,8 @@ const ProjectModal = ({
   if (!selectedProject) return null;
   
   const hasImageError = imageError[selectedProject.id] || imageLoadError;
-  const isImageLoaded = imagesLoaded[selectedProject.id] && imageUrl;
+  const isImageLoaded = imagesLoaded[selectedProject.id] && imageUrl && !imageLoadError;
+  const isLoading = imageLoading && !hasImageError;
   const projectWithImage = { ...selectedProject, image: imageUrl || '' };
   
   return (
@@ -57,21 +58,27 @@ const ProjectModal = ({
           <div className="w-full md:w-1/2 h-52 sm:h-60 md:h-72">
             {hasImageError ? (
               <div className="flex h-full w-full flex-col items-center justify-center bg-metal-200 p-4">
-                <p className="text-metal-500">Bild saknas</p>
-                <p className="text-xs text-metal-400 mt-1 text-center break-all">{imageUrl}</p>
+                <div className="text-metal-400 mb-4">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <p className="text-metal-500 text-center mb-2">Bild kunde inte laddas</p>
+                <p className="text-xs text-metal-400 text-center">Försök igen eller kontakta support om problemet kvarstår</p>
               </div>
             ) : (
               <div className="relative h-full w-full">
-                {(!isImageLoaded || imageLoading) && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500"></div>
+                {(isLoading || !isImageLoaded) && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-metal-100">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500 mb-2"></div>
+                    <p className="text-sm text-metal-500">Laddar bild...</p>
                   </div>
                 )}
-                {imageUrl && (
+                {imageUrl && !imageLoadError && (
                   <img 
                     src={imageUrl} 
                     alt={selectedProject.title}
-                    className={`h-full w-full object-contain ${
+                    className={`h-full w-full object-contain transition-opacity duration-500 ${
                       isImageLoaded ? 'opacity-100' : 'opacity-0'
                     }`}
                     onError={() => onImageError(selectedProject.id)}

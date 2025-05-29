@@ -16,38 +16,78 @@ export const useProjectImage = (projectId: number | null) => {
       return;
     }
 
-    const fetchImage = async () => {
+    const fetchImageWithTimeout = async (timeoutMs: number = 5000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
       try {
-        setLoading(true);
-        setError(false);
-        
         const { data, error: fetchError } = await supabase
           .from('projects')
           .select('image_url')
           .eq('id', projectId)
+          .abortSignal(controller.signal)
           .single();
+
+        clearTimeout(timeoutId);
 
         if (fetchError) {
           console.error('Error fetching project image:', fetchError);
-          setError(true);
-          return;
+          throw fetchError;
         }
 
-        setImageUrl(data.image_url);
+        return data.image_url;
       } catch (error) {
-        console.error('Error fetching project image:', error);
-        setError(true);
-        toast({
-          title: "Fel",
-          description: "Kunde inte ladda projektbild.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+        clearTimeout(timeoutId);
+        throw error;
       }
     };
 
-    fetchImage();
+    const fetchImageWithRetry = async (maxRetries: number = 2) => {
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          setLoading(true);
+          setError(false);
+          
+          const imageData = await fetchImageWithTimeout(5000);
+          
+          if (imageData) {
+            setImageUrl(imageData);
+            return;
+          } else {
+            // No image data found
+            setImageUrl(null);
+            setError(false);
+            return;
+          }
+        } catch (error: any) {
+          console.error(`Attempt ${attempt + 1} failed:`, error);
+          
+          if (attempt === maxRetries) {
+            // Final attempt failed
+            setError(true);
+            setImageUrl(null);
+            
+            if (error.name !== 'AbortError') {
+              toast({
+                title: "Bildladdning misslyckades",
+                description: "Kunde inte ladda projektbild efter flera försök.",
+                variant: "destructive",
+              });
+            }
+          } else {
+            // Wait before retry (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+          }
+        }
+      }
+    };
+
+    fetchImageWithRetry();
+
+    return () => {
+      // Cleanup function to prevent memory leaks
+      setLoading(false);
+    };
   }, [projectId, toast]);
 
   return {
