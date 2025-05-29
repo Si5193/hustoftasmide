@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AdminProjectList from '../components/admin/AdminProjectList';
 import AdminProjectForm from '../components/admin/AdminProjectForm';
 import ImageMigrationPanel from '../components/admin/ImageMigrationPanel';
+import ImageRepairTool from '../components/admin/ImageRepairTool';
 import { useSupabaseProjects } from '../hooks/useSupabaseProjects';
 import { useToast } from '@/hooks/use-toast';
 import { LogOut } from 'lucide-react';
@@ -94,9 +95,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="projects" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="projects">Hantera Projekt</TabsTrigger>
             <TabsTrigger value="add">Lägg till Projekt</TabsTrigger>
+            <TabsTrigger value="repair">Reparera Bilder</TabsTrigger>
             <TabsTrigger value="migration">Bildmigrering</TabsTrigger>
           </TabsList>
           
@@ -124,6 +126,10 @@ const Admin = () => {
                 <AdminProjectForm />
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="repair" className="mt-6">
+            <ImageRepairTool />
           </TabsContent>
 
           <TabsContent value="migration" className="mt-6">

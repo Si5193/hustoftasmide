@@ -6,9 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSupabaseProjects, Project } from '../../hooks/useSupabaseProjects';
+import { useImageUpload } from '../../hooks/useImageUpload';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 interface AdminProjectFormProps {
   initialProject?: Project;
@@ -19,57 +19,25 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
   const [title, setTitle] = useState(initialProject?.title || '');
   const [description, setDescription] = useState(initialProject?.description || '');
   const [category, setCategory] = useState(initialProject?.category || '');
-  const [image, setImage] = useState(initialProject?.image || '');
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState(initialProject?.image || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadResult, setUploadResult] = useState<any>(null);
 
   const { addProject, updateProject } = useSupabaseProjects();
+  const { uploadImage, isUploading } = useImageUpload();
   const { toast } = useToast();
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({
-          title: "Fil för stor",
-          description: "Bilden får max vara 5MB.",
-          variant: "destructive",
-        });
-        return;
-      }
+    if (!file) return;
 
-      setImageFile(file);
-      
-      // Skapa preview URL
-      const previewUrl = URL.createObjectURL(file);
-      setImage(previewUrl);
-    }
-  };
-
-  const uploadImageToStorage = async (file: File): Promise<string | null> => {
-    try {
-      // Skapa unikt filnamn
-      const fileExtension = file.name.split('.').pop() || 'jpg';
-      const fileName = `project-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
-      const storagePath = `projects/${fileName}`;
-
-      // Ladda upp till Storage
-      const { error: uploadError } = await supabase.storage
-        .from('project-images')
-        .upload(storagePath, file, {
-          contentType: file.type,
-          upsert: false
-        });
-
-      if (uploadError) {
-        console.error('Storage upload error:', uploadError);
-        return null;
-      }
-
-      return storagePath;
-    } catch (error) {
-      console.error('Error uploading to storage:', error);
-      return null;
+    console.log('📸 Starting image upload and compression...');
+    const result = await uploadImage(file);
+    
+    if (result) {
+      setPreviewImage(result.publicUrl);
+      setUploadResult(result);
+      console.log('✅ Image ready for project save');
     }
   };
 
@@ -88,63 +56,28 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
     setIsSubmitting(true);
 
     try {
-      let finalImageData = image;
-      let storagePath = null;
-
-      // Om en ny fil har laddats upp, ladda upp den till Storage
-      if (imageFile) {
-        storagePath = await uploadImageToStorage(imageFile);
-        if (!storagePath) {
-          toast({
-            title: "Uppladdningsfel",
-            description: "Kunde inte ladda upp bilden. Försök igen.",
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        // Hämta public URL för Storage-bilden
-        const { data: { publicUrl } } = supabase.storage
-          .from('project-images')
-          .getPublicUrl(storagePath);
-        
-        finalImageData = publicUrl;
-      }
+      const projectData = {
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        image: previewImage || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop',
+        ...(uploadResult && { storage_path: uploadResult.storagePath })
+      };
 
       if (initialProject) {
-        // Update existing project
-        const success = await updateProject(initialProject.id, {
-          title: title.trim(),
-          description: description.trim(),
-          category,
-          image: finalImageData,
-          // Lägg till storage_path om vi har en
-          ...(storagePath && { storage_path: storagePath })
-        });
-        
+        const success = await updateProject(initialProject.id, projectData);
         if (success && onComplete) {
           onComplete();
         }
       } else {
-        // Add new project
-        const projectData = {
-          title: title.trim(),
-          description: description.trim(),
-          category,
-          image: finalImageData || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop',
-          // Lägg till storage_path om vi har en
-          ...(storagePath && { storage_path: storagePath })
-        };
-
         const newProject = await addProject(projectData);
-        
         if (newProject) {
           // Reset form
           setTitle('');
           setDescription('');
           setCategory('');
-          setImage('');
-          setImageFile(null);
+          setPreviewImage('');
+          setUploadResult(null);
         }
       }
     } catch (error) {
@@ -160,8 +93,8 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
   };
 
   const removeImage = () => {
-    setImage('');
-    setImageFile(null);
+    setPreviewImage('');
+    setUploadResult(null);
   };
 
   return (
@@ -209,10 +142,10 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
           <div>
             <Label>Projektbild</Label>
             <div className="mt-2">
-              {image ? (
+              {previewImage ? (
                 <div className="relative">
                   <img
-                    src={image}
+                    src={previewImage}
                     alt="Förhandsvisning"
                     className="w-full h-48 object-cover rounded-lg border"
                   />
@@ -222,30 +155,46 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
                     size="sm"
                     className="absolute top-2 right-2"
                     onClick={removeImage}
+                    disabled={isUploading}
                   >
                     <X size={16} />
                   </Button>
+                  {uploadResult && (
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      Komprimerad: {(uploadResult.compressedSize / 1024).toFixed(1)}KB
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="mt-2">
-                    <Label htmlFor="image-upload" className="cursor-pointer">
-                      <span className="text-sm text-blue-600 hover:text-blue-500">
-                        Ladda upp en bild
-                      </span>
-                      <Input
-                        id="image-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                    </Label>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    PNG, JPG, GIF upp till 5MB
-                  </p>
+                  {isUploading ? (
+                    <div className="flex flex-col items-center">
+                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent mb-2" />
+                      <p className="text-sm text-gray-600">Komprimerar och laddar upp...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                      <div className="mt-2">
+                        <Label htmlFor="image-upload" className="cursor-pointer">
+                          <span className="text-sm text-blue-600 hover:text-blue-500">
+                            Ladda upp en bild
+                          </span>
+                          <Input
+                            id="image-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                            disabled={isUploading}
+                          />
+                        </Label>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Alla bildformat, komprimeras automatiskt till &lt;500KB
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -259,7 +208,7 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
             Avbryt
           </Button>
         )}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" disabled={isSubmitting || isUploading}>
           {isSubmitting ? 'Sparar...' : initialProject ? 'Uppdatera projekt' : 'Lägg till projekt'}
         </Button>
       </div>
