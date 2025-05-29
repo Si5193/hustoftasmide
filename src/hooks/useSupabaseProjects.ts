@@ -61,42 +61,20 @@ export const useSupabaseProjects = () => {
     try {
       setLoading(true);
       
-      // Try to fetch with storage_path first
-      let data = null;
-      let hasStoragePath = false;
-      
-      try {
-        // Test if storage_path column exists
-        const { data: testData, error: testError } = await supabase
-          .from('projects')
-          .select('id, title, description, category, storage_path, created_at')
-          .order('created_at', { ascending: false });
-        
-        if (!testError && testData) {
-          data = testData;
-          hasStoragePath = true;
-        }
-      } catch (error) {
-        console.log('storage_path column not available yet');
-      }
+      // Fetch projects with storage_path column
+      const { data, error } = await supabase
+        .from('projects')
+        .select('id, title, description, category, storage_path, created_at')
+        .order('created_at', { ascending: false });
 
-      // If storage_path query failed, fall back to basic fields
-      if (!data) {
-        const { data: fallbackData, error: fallbackError } = await supabase
-          .from('projects')
-          .select('id, title, description, category, created_at')
-          .order('created_at', { ascending: false });
-
-        if (fallbackError) {
-          console.error('Error fetching projects:', fallbackError);
-          toast({
-            title: "Fel",
-            description: "Kunde inte ladda projekt från databasen.",
-            variant: "destructive",
-          });
-          return;
-        }
-        data = fallbackData;
+      if (error) {
+        console.error('Error fetching projects:', error);
+        toast({
+          title: "Fel",
+          description: "Kunde inte ladda projekt från databasen.",
+          variant: "destructive",
+        });
+        return;
       }
 
       if (!data) {
@@ -108,7 +86,7 @@ export const useSupabaseProjects = () => {
       const mappedProjects = data.map(dbProject => {
         let imageUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
         
-        if (hasStoragePath && dbProject.storage_path && typeof dbProject.storage_path === 'string') {
+        if (dbProject.storage_path && typeof dbProject.storage_path === 'string') {
           // Hämta public URL från Storage
           const { data: { publicUrl } } = supabase.storage
             .from('project-images')

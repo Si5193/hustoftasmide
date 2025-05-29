@@ -19,12 +19,12 @@ export const useProjectImage = (projectId: number | null) => {
         setLoading(true);
         setError(false);
         
-        // Hämta projekt med storage_path och image_url - använd any för TypeScript
+        // Hämta projekt med storage_path och image_url
         const { data, error: fetchError } = await supabase
           .from('projects')
           .select('image_url, storage_path')
           .eq('id', projectId)
-          .single() as { data: any; error: any };
+          .single();
 
         if (fetchError) {
           throw fetchError;
