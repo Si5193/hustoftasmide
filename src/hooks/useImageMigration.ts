@@ -13,7 +13,7 @@ export const useImageMigration = () => {
       setMigrating(true);
       setProgress(0);
 
-      // Hämta alla projekt med base64-bilder (hantera fall där storage_path inte finns)
+      // Hämta alla projekt med base64-bilder
       const { data: projects, error: fetchError } = await supabase
         .from('projects')
         .select('id, title, image_url')
@@ -34,13 +34,13 @@ export const useImageMigration = () => {
       // Filtrera bort projekt som redan har storage_path (om kolumnen finns)
       let projectsToMigrate = projects;
       try {
-        const { data: projectsWithStorage } = await supabase
+        const { data: projectsWithStorage, error: storageError } = await supabase
           .from('projects')
           .select('id, storage_path')
           .not('storage_path', 'is', null);
         
-        if (projectsWithStorage) {
-          const migratedIds = new Set(projectsWithStorage.map(p => p.id));
+        if (!storageError && projectsWithStorage) {
+          const migratedIds = new Set(projectsWithStorage.map((p: any) => p.id));
           projectsToMigrate = projects.filter(p => !migratedIds.has(p.id));
         }
       } catch (error) {
@@ -101,9 +101,10 @@ export const useImageMigration = () => {
 
           // Försök uppdatera projekt med storage_path (hantera fall där kolumnen inte finns)
           try {
+            const updateData: any = { storage_path: storagePath };
             const { error: updateError } = await supabase
               .from('projects')
-              .update({ storage_path: storagePath } as any)
+              .update(updateData)
               .eq('id', project.id);
 
             if (updateError) {

@@ -20,38 +20,48 @@ export const useProjectImage = (projectId: number | null) => {
         setError(false);
         
         // Försök hämta med storage_path först, fallback till bara image_url
-        let query = supabase
-          .from('projects')
-          .select('image_url')
-          .eq('id', projectId)
-          .single();
+        let selectFields = 'image_url';
+        let hasStoragePath = false;
 
-        // Försök inkludera storage_path om kolumnen finns
+        // Testa om storage_path kolumnen finns
         try {
-          query = supabase
+          const { error: testError } = await supabase
             .from('projects')
-            .select('image_url, storage_path')
+            .select('storage_path')
             .eq('id', projectId)
-            .single();
+            .limit(1);
+
+          if (!testError) {
+            selectFields = 'image_url, storage_path';
+            hasStoragePath = true;
+          }
         } catch (error) {
-          // storage_path kolumn finns inte, använd bara image_url
           console.log('storage_path column not available, using image_url only');
         }
 
-        const { data, error: fetchError } = await query;
+        const { data, error: fetchError } = await supabase
+          .from('projects')
+          .select(selectFields)
+          .eq('id', projectId)
+          .single();
 
         if (fetchError) {
           throw fetchError;
         }
 
+        if (!data) {
+          setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
+          return;
+        }
+
         // Prioritera Storage-bild om den finns och storage_path kolumnen existerar
-        if (data && 'storage_path' in data && data.storage_path) {
+        if (hasStoragePath && data.storage_path && typeof data.storage_path === 'string') {
           const { data: { publicUrl } } = supabase.storage
             .from('project-images')
             .getPublicUrl(data.storage_path);
           
           setImageUrl(publicUrl);
-        } else if (data && data.image_url) {
+        } else if (data.image_url) {
           // Fallback till base64 om Storage-bild inte finns
           if (data.image_url.startsWith('data:')) {
             // För stora base64-bilder, använd placeholder tills migration är klar

@@ -63,16 +63,20 @@ export const useSupabaseProjects = () => {
       
       // Försök hämta med storage_path, fallback till utan
       let selectFields = 'id, title, description, category, created_at';
+      let hasStoragePath = false;
       
       try {
         // Testa om storage_path kolumnen finns
-        const { data: testData } = await supabase
+        const { error: testError } = await supabase
           .from('projects')
           .select('storage_path')
           .limit(1);
         
         // Om ingen error, inkludera storage_path
-        selectFields = 'id, title, description, category, storage_path, created_at';
+        if (!testError) {
+          selectFields = 'id, title, description, category, storage_path, created_at';
+          hasStoragePath = true;
+        }
       } catch (error) {
         console.log('storage_path column not available yet');
       }
@@ -96,7 +100,7 @@ export const useSupabaseProjects = () => {
       const mappedProjects = data.map(dbProject => {
         let imageUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
         
-        if (dbProject.storage_path) {
+        if (hasStoragePath && dbProject.storage_path && typeof dbProject.storage_path === 'string') {
           // Hämta public URL från Storage
           const { data: { publicUrl } } = supabase.storage
             .from('project-images')
