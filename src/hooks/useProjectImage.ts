@@ -19,39 +19,15 @@ export const useProjectImage = (projectId: number | null) => {
         setLoading(true);
         setError(false);
         
-        // First try to fetch with storage_path
-        let data = null;
-        let hasStoragePath = false;
+        // Hämta projekt med storage_path och image_url
+        const { data, error: fetchError } = await supabase
+          .from('projects')
+          .select('image_url, storage_path')
+          .eq('id', projectId)
+          .single();
 
-        // Test if storage_path column exists by trying to select it
-        try {
-          const { data: testData, error: testError } = await supabase
-            .from('projects')
-            .select('image_url, storage_path')
-            .eq('id', projectId)
-            .single();
-
-          if (!testError && testData) {
-            data = testData;
-            hasStoragePath = true;
-          }
-        } catch (error) {
-          // storage_path column doesn't exist, fall back to image_url only
-          console.log('storage_path column not available, using image_url only');
-        }
-
-        // If storage_path query failed, try with just image_url
-        if (!data) {
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from('projects')
-            .select('image_url')
-            .eq('id', projectId)
-            .single();
-
-          if (fallbackError) {
-            throw fallbackError;
-          }
-          data = fallbackData;
+        if (fetchError) {
+          throw fetchError;
         }
 
         if (!data) {
@@ -59,20 +35,21 @@ export const useProjectImage = (projectId: number | null) => {
           return;
         }
 
-        // Prioritera Storage-bild om den finns och storage_path kolumnen existerar
-        if (hasStoragePath && data.storage_path && typeof data.storage_path === 'string') {
+        // Prioritera Storage-bild om den finns
+        if (data.storage_path && typeof data.storage_path === 'string') {
           const { data: { publicUrl } } = supabase.storage
             .from('project-images')
             .getPublicUrl(data.storage_path);
           
           setImageUrl(publicUrl);
         } else if (data.image_url) {
-          // Fallback till base64 om Storage-bild inte finns
+          // Fallback till image_url, men kontrollera om det är base64
           if (data.image_url.startsWith('data:')) {
-            // För stora base64-bilder, använd placeholder tills migration är klar
-            console.log(`Project ${projectId} har fortfarande base64-bild, använder placeholder`);
+            // För stora base64-bilder, visa meddelande och använd placeholder
+            console.log(`Projekt ${projectId} har base64-bild som behöver migreras`);
             setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
           } else {
+            // Vanlig URL
             setImageUrl(data.image_url);
           }
         } else {

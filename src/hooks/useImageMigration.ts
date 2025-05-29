@@ -13,11 +13,12 @@ export const useImageMigration = () => {
       setMigrating(true);
       setProgress(0);
 
-      // Hämta alla projekt med base64-bilder
+      // Hämta alla projekt med base64-bilder som inte redan har storage_path
       const { data: projects, error: fetchError } = await supabase
         .from('projects')
-        .select('id, title, image_url')
-        .like('image_url', 'data:%');
+        .select('id, title, image_url, storage_path')
+        .like('image_url', 'data:%')
+        .is('storage_path', null);
 
       if (fetchError) {
         throw fetchError;
@@ -31,36 +32,11 @@ export const useImageMigration = () => {
         return;
       }
 
-      // Filtrera bort projekt som redan har storage_path (om kolumnen finns)
-      let projectsToMigrate = projects;
-      try {
-        const { data: projectsWithStorage, error: storageError } = await supabase
-          .from('projects')
-          .select('id, storage_path')
-          .not('storage_path', 'is', null);
-        
-        if (!storageError && projectsWithStorage) {
-          const migratedIds = new Set(projectsWithStorage.map((p: any) => p.id));
-          projectsToMigrate = projects.filter(p => !migratedIds.has(p.id));
-        }
-      } catch (error) {
-        // storage_path kolumn finns inte än, migrera alla base64 bilder
-        console.log('storage_path column does not exist yet, migrating all base64 images');
-      }
+      console.log(`Migrerar ${projects.length} bilder till Storage...`);
 
-      if (projectsToMigrate.length === 0) {
-        toast({
-          title: "Inga bilder att migrera",
-          description: "Alla bilder är redan migrerade till Storage.",
-        });
-        return;
-      }
-
-      console.log(`Migrerar ${projectsToMigrate.length} bilder till Storage...`);
-
-      for (let i = 0; i < projectsToMigrate.length; i++) {
-        const project = projectsToMigrate[i];
-        setProgress(((i + 1) / projectsToMigrate.length) * 100);
+      for (let i = 0; i < projects.length; i++) {
+        const project = projects[i];
+        setProgress(((i + 1) / projects.length) * 100);
 
         try {
           // Konvertera base64 till blob
@@ -99,20 +75,19 @@ export const useImageMigration = () => {
             continue;
           }
 
-          // Försök uppdatera projekt med storage_path (hantera fall där kolumnen inte finns)
-          try {
-            const updateData: any = { storage_path: storagePath };
-            const { error: updateError } = await supabase
-              .from('projects')
-              .update(updateData)
-              .eq('id', project.id);
+          // Uppdatera projekt med storage_path
+          const { error: updateError } = await supabase
+            .from('projects')
+            .update({ storage_path: storagePath })
+            .eq('id', project.id);
 
-            if (updateError) {
-              console.error(`Fel vid uppdatering av projekt ${project.id}:`, updateError);
-              continue;
-            }
-          } catch (error) {
-            console.log(`storage_path column does not exist for project ${project.id}, but image uploaded successfully`);
+          if (updateError) {
+            console.error(`Fel vid uppdatering av projekt ${project.id}:`, updateError);
+            // Ta bort den uppladdade filen om uppdateringen misslyckades
+            await supabase.storage
+              .from('project-images')
+              .remove([storagePath]);
+            continue;
           }
 
           console.log(`Migrerade bild för projekt ${project.id}: ${storagePath}`);
@@ -125,7 +100,7 @@ export const useImageMigration = () => {
 
       toast({
         title: "Migration slutförd",
-        description: `${projectsToMigrate.length} bilder har migrerats till Storage.`,
+        description: `${projects.length} bilder har migrerats till Storage. Ursprungsbilderna är nu återställda!`,
       });
 
     } catch (error) {
