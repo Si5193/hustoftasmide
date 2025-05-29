@@ -1,13 +1,11 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 
 export const useProjectImage = (projectId: number | null) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (!projectId) {
@@ -16,79 +14,43 @@ export const useProjectImage = (projectId: number | null) => {
       return;
     }
 
-    const fetchImageWithTimeout = async (timeoutMs: number = 5000) => {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    // För tillfället, hoppa över bildladdning helt och visa placeholder
+    // Detta undviker timeout-problem med stora base64-bilder
+    console.log(`Skipping image load for project ${projectId} - using placeholder`);
+    setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop'); // Placeholder från projektet
+    setLoading(false);
+    setError(false);
 
+    // Kommenterad kod för framtida användning när vi migrerat till Storage:
+    /*
+    const fetchImage = async () => {
       try {
+        setLoading(true);
+        setError(false);
+        
         const { data, error: fetchError } = await supabase
           .from('projects')
           .select('image_url')
           .eq('id', projectId)
-          .abortSignal(controller.signal)
           .single();
 
-        clearTimeout(timeoutId);
-
         if (fetchError) {
-          console.error('Error fetching project image:', fetchError);
           throw fetchError;
         }
 
-        return data.image_url;
+        setImageUrl(data.image_url || null);
       } catch (error) {
-        clearTimeout(timeoutId);
-        throw error;
+        console.error('Error fetching project image:', error);
+        setError(true);
+        setImageUrl(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    const fetchImageWithRetry = async (maxRetries: number = 2) => {
-      for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-          setLoading(true);
-          setError(false);
-          
-          const imageData = await fetchImageWithTimeout(5000);
-          
-          if (imageData) {
-            setImageUrl(imageData);
-            return;
-          } else {
-            // No image data found
-            setImageUrl(null);
-            setError(false);
-            return;
-          }
-        } catch (error: any) {
-          console.error(`Attempt ${attempt + 1} failed:`, error);
-          
-          if (attempt === maxRetries) {
-            // Final attempt failed
-            setError(true);
-            setImageUrl(null);
-            
-            if (error.name !== 'AbortError') {
-              toast({
-                title: "Bildladdning misslyckades",
-                description: "Kunde inte ladda projektbild efter flera försök.",
-                variant: "destructive",
-              });
-            }
-          } else {
-            // Wait before retry (exponential backoff)
-            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-          }
-        }
-      }
-    };
-
-    fetchImageWithRetry();
-
-    return () => {
-      // Cleanup function to prevent memory leaks
-      setLoading(false);
-    };
-  }, [projectId, toast]);
+    fetchImage();
+    */
+  }, [projectId]);
 
   return {
     imageUrl,
