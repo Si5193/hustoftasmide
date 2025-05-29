@@ -14,11 +14,12 @@ export const useImageMigration = () => {
       setProgress(0);
 
       // Hämta alla projekt med base64-bilder som inte redan har storage_path
+      // Vi använder any för att undvika TypeScript-fel med storage_path
       const { data: projects, error: fetchError } = await supabase
         .from('projects')
         .select('id, title, image_url, storage_path')
         .like('image_url', 'data:%')
-        .is('storage_path', null);
+        .is('storage_path', null) as { data: any[] | null; error: any };
 
       if (fetchError) {
         throw fetchError;
@@ -75,10 +76,10 @@ export const useImageMigration = () => {
             continue;
           }
 
-          // Uppdatera projekt med storage_path
+          // Uppdatera projekt med storage_path - använd any för att undvika TypeScript-fel
           const { error: updateError } = await supabase
             .from('projects')
-            .update({ storage_path: storagePath })
+            .update({ storage_path: storagePath } as any)
             .eq('id', project.id);
 
           if (updateError) {

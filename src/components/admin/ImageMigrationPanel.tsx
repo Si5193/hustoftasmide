@@ -30,11 +30,11 @@ const ImageMigrationPanel = () => {
           .select('*', { count: 'exact', head: true })
           .like('image_url', 'data:%');
 
-        // Count projects with storage paths
+        // Count projects with storage paths - använd any för TypeScript
         const { count: storageCount } = await supabase
           .from('projects')
           .select('*', { count: 'exact', head: true })
-          .not('storage_path', 'is', null);
+          .not('storage_path', 'is', null) as { count: number | null };
 
         setMigrationStats({
           total: totalCount || 0,
