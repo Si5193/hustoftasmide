@@ -19,34 +19,39 @@ export const useProjectImage = (projectId: number | null) => {
         setLoading(true);
         setError(false);
         
-        // Försök hämta med storage_path först, fallback till bara image_url
-        let selectFields = 'image_url';
+        // First try to fetch with storage_path
+        let data = null;
         let hasStoragePath = false;
 
-        // Testa om storage_path kolumnen finns
+        // Test if storage_path column exists by trying to select it
         try {
-          const { error: testError } = await supabase
+          const { data: testData, error: testError } = await supabase
             .from('projects')
-            .select('storage_path')
+            .select('image_url, storage_path')
             .eq('id', projectId)
-            .limit(1);
+            .single();
 
-          if (!testError) {
-            selectFields = 'image_url, storage_path';
+          if (!testError && testData) {
+            data = testData;
             hasStoragePath = true;
           }
         } catch (error) {
+          // storage_path column doesn't exist, fall back to image_url only
           console.log('storage_path column not available, using image_url only');
         }
 
-        const { data, error: fetchError } = await supabase
-          .from('projects')
-          .select(selectFields)
-          .eq('id', projectId)
-          .single();
+        // If storage_path query failed, try with just image_url
+        if (!data) {
+          const { data: fallbackData, error: fallbackError } = await supabase
+            .from('projects')
+            .select('image_url')
+            .eq('id', projectId)
+            .single();
 
-        if (fetchError) {
-          throw fetchError;
+          if (fallbackError) {
+            throw fallbackError;
+          }
+          data = fallbackData;
         }
 
         if (!data) {

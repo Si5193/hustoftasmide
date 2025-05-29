@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -62,38 +61,46 @@ export const useSupabaseProjects = () => {
     try {
       setLoading(true);
       
-      // Försök hämta med storage_path, fallback till utan
-      let selectFields = 'id, title, description, category, created_at';
+      // Try to fetch with storage_path first
+      let data = null;
       let hasStoragePath = false;
       
       try {
-        // Testa om storage_path kolumnen finns
-        const { error: testError } = await supabase
+        // Test if storage_path column exists
+        const { data: testData, error: testError } = await supabase
           .from('projects')
-          .select('storage_path')
-          .limit(1);
+          .select('id, title, description, category, storage_path, created_at')
+          .order('created_at', { ascending: false });
         
-        // Om ingen error, inkludera storage_path
-        if (!testError) {
-          selectFields = 'id, title, description, category, storage_path, created_at';
+        if (!testError && testData) {
+          data = testData;
           hasStoragePath = true;
         }
       } catch (error) {
         console.log('storage_path column not available yet');
       }
 
-      const { data, error } = await supabase
-        .from('projects')
-        .select(selectFields)
-        .order('created_at', { ascending: false });
+      // If storage_path query failed, fall back to basic fields
+      if (!data) {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('projects')
+          .select('id, title, description, category, created_at')
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching projects:', error);
-        toast({
-          title: "Fel",
-          description: "Kunde inte ladda projekt från databasen.",
-          variant: "destructive",
-        });
+        if (fallbackError) {
+          console.error('Error fetching projects:', fallbackError);
+          toast({
+            title: "Fel",
+            description: "Kunde inte ladda projekt från databasen.",
+            variant: "destructive",
+          });
+          return;
+        }
+        data = fallbackData;
+      }
+
+      if (!data) {
+        console.error('No data returned from projects query');
         return;
       }
 
