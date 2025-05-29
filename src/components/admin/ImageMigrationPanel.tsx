@@ -290,7 +290,7 @@ const ImageMigrationPanel = () => {
 
         <div className="text-sm text-gray-600 space-y-1">
           <p>• <strong>Optimerad för stabilitet:</strong> En bild åt gången med pauser</p>
-          <p>• <strong>Intelligent storlekskontroll:</strong> Hoppar över för stora bilder (>8MB)</p>
+          <p>• <strong>Intelligent storlekskontroll:</strong> Hoppar över för stora bilder (&gt;8MB)</p>
           <p>• <strong>Säker:</strong> Verifierar varje uppladdning innan databasuppdatering</p>
           <p>• <strong>Pausbar:</strong> Kan pausas och återupptas när som helst</p>
           <p>• <strong>Smart återförsök:</strong> Automatiska omförsök vid tillfälliga fel</p>
