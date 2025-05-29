@@ -1,10 +1,9 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { useImageMigration } from '../../hooks/useImageMigration';
 import { useStorageSetup } from '../../hooks/useStorageSetup';
-import { Upload, CheckCircle, Database, Pause, Play, RotateCcw, AlertTriangle, Folder, Clock } from 'lucide-react';
+import { Upload, CheckCircle, Database, Pause, Play, RotateCcw, AlertTriangle, Folder, Clock, RefreshCw, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -19,7 +18,14 @@ const ImageMigrationPanel = () => {
     resetMigration 
   } = useImageMigration();
   
-  const { bucketExists, checking: checkingBucket } = useStorageSetup();
+  const { 
+    bucketExists, 
+    checking: checkingBucket, 
+    error: bucketError,
+    lastChecked,
+    refreshBucketStatus,
+    forceBucketExists
+  } = useStorageSetup();
   
   const [migrationStats, setMigrationStats] = useState({
     total: 0,
@@ -101,8 +107,58 @@ const ImageMigrationPanel = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Storage Status */}
-        {!checkingBucket && !bucketExists && (
+        {/* Storage Status with Enhanced Error Handling */}
+        {checkingBucket && (
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+              <span className="text-blue-800 font-medium">
+                Kontrollerar storage bucket...
+              </span>
+            </div>
+          </div>
+        )}
+
+        {!checkingBucket && bucketError && (
+          <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="text-red-600" size={20} />
+              <span className="text-red-800 font-medium">
+                Problem med storage bucket
+              </span>
+            </div>
+            <p className="text-red-700 text-sm mb-3">
+              {bucketError}
+            </p>
+            <div className="flex gap-2">
+              <Button 
+                onClick={refreshBucketStatus} 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                <RefreshCw size={14} />
+                Kontrollera igen
+              </Button>
+              <Button 
+                onClick={forceBucketExists} 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-1 text-orange-600 border-orange-300"
+              >
+                <Zap size={14} />
+                Tvinga fortsätt
+              </Button>
+            </div>
+            {lastChecked && (
+              <p className="text-xs text-red-600 mt-2">
+                Senast kontrollerad: {lastChecked.toLocaleTimeString()}
+              </p>
+            )}
+          </div>
+        )}
+
+        {!checkingBucket && !bucketExists && !bucketError && (
           <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <Folder className="text-yellow-600" size={20} />
@@ -110,9 +166,29 @@ const ImageMigrationPanel = () => {
                 Storage bucket saknas
               </span>
             </div>
-            <p className="text-yellow-700 text-sm">
+            <p className="text-yellow-700 text-sm mb-3">
               Storage bucket:en ska ha skapats automatiskt. Om den saknas, kontakta support.
             </p>
+            <div className="flex gap-2">
+              <Button 
+                onClick={refreshBucketStatus} 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-1"
+              >
+                <RefreshCw size={14} />
+                Kontrollera igen
+              </Button>
+              <Button 
+                onClick={forceBucketExists} 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-1 text-orange-600 border-orange-300"
+              >
+                <Zap size={14} />
+                Tvinga fortsätt ändå
+              </Button>
+            </div>
           </div>
         )}
 
@@ -123,10 +199,23 @@ const ImageMigrationPanel = () => {
               <span className="text-green-800 font-medium">
                 Storage bucket är klar!
               </span>
+              <Button 
+                onClick={refreshBucketStatus} 
+                variant="ghost" 
+                size="sm"
+                className="ml-auto flex items-center gap-1"
+              >
+                <RefreshCw size={12} />
+              </Button>
             </div>
             <p className="text-green-700 text-sm">
               Bucket "project-images" är skapad och redo för migration.
             </p>
+            {lastChecked && (
+              <p className="text-xs text-green-600 mt-1">
+                Kontrollerad: {lastChecked.toLocaleTimeString()}
+              </p>
+            )}
           </div>
         )}
 
