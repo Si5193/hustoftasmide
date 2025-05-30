@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -62,7 +61,7 @@ export const useSupabaseProjects = () => {
     try {
       setLoading(true);
       
-      // Fetch projects with storage_path column
+      // Fetch projects with only essential data for listing - no image URLs
       const { data, error } = await supabase
         .from('projects')
         .select('id, title, description, category, storage_path, created_at')
@@ -83,23 +82,11 @@ export const useSupabaseProjects = () => {
         return;
       }
 
-      // Map projects och sätt image baserat på storage_path eller fallback
-      const mappedProjects = data.map(dbProject => {
-        let imageUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
-        
-        if (dbProject.storage_path && typeof dbProject.storage_path === 'string') {
-          // Hämta public URL från Storage
-          const { data: { publicUrl } } = supabase.storage
-            .from('project-images')
-            .getPublicUrl(dbProject.storage_path);
-          imageUrl = publicUrl;
-        }
-
-        return {
-          ...mapSupabaseProjectList(dbProject),
-          image: imageUrl
-        };
-      });
+      // Map projects without loading images here - let individual components handle image loading
+      const mappedProjects = data.map(dbProject => ({
+        ...mapSupabaseProjectList(dbProject),
+        image: '' // Will be loaded by useProjectImage hook when needed
+      }));
       
       setProjects(mappedProjects);
     } catch (error) {

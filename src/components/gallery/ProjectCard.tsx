@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { Project } from '../../hooks/useSupabaseProjects';
 import { useProjectImage } from '../../hooks/useProjectImage';
 import { useIsMobile } from '@/hooks/use-mobile';
+import OptimizedImage from './OptimizedImage';
 
 interface ProjectCardProps {
   project: Project;
@@ -24,7 +25,7 @@ const ProjectCard = ({
   onImageLoad
 }: ProjectCardProps) => {
   const isMobile = useIsMobile();
-  const { imageUrl, loading: imageLoading, error: imageLoadError } = useProjectImage(project.id);
+  const { imageUrl, loading: imageLoading } = useProjectImage(project.id);
   
   // Update project with loaded image
   const projectWithImage = { ...project, image: imageUrl || '' };
@@ -45,30 +46,13 @@ const ProjectCard = ({
       className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg min-h-[120px] md:min-h-[200px]"
       onClick={() => onOpenProject(projectWithImage, index)}
     >
-      <div className="aspect-square overflow-hidden">
-        <div className="relative h-full w-full">
-          {imageLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-metal-100">
-              <div className="h-4 w-4 md:h-8 md:w-8 animate-spin rounded-full border-2 md:border-4 border-metal-300 border-t-metal-500"></div>
-            </div>
-          )}
-          {imageUrl && (
-            <img
-              src={imageUrl}
-              alt={project.title}
-              className="h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-105"
-              onError={handleImageError}
-              onLoad={handleImageLoad}
-              loading="lazy"
-              style={{
-                // Optimera för stora base64-bilder
-                imageRendering: imageUrl.startsWith('data:') ? 'auto' : 'auto',
-                objectFit: 'cover'
-              }}
-            />
-          )}
-        </div>
-      </div>
+      <OptimizedImage
+        src={imageUrl || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop'}
+        alt={project.title}
+        className="transition-all duration-500 ease-out group-hover:scale-105"
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+      />
       
       <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-2 md:p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         <div className="translate-y-2 md:translate-y-4 transform transition-transform duration-300 group-hover:translate-y-0">

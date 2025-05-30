@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Project } from '../../hooks/useSupabaseProjects';
 import { useProjectImage } from '../../hooks/useProjectImage';
 import ShareButton from '../ui/share-button';
+import OptimizedImage from './OptimizedImage';
 
 interface ProjectModalProps {
   selectedProject: Project | null;
@@ -29,7 +30,7 @@ const ProjectModal = ({
   onNavigate,
   onBackdropClick
 }: ProjectModalProps) => {
-  const { imageUrl, loading: imageLoading, error: imageLoadError } = useProjectImage(selectedProject?.id || null);
+  const { imageUrl } = useProjectImage(selectedProject?.id || null);
   
   if (!selectedProject) return null;
   
@@ -65,28 +66,14 @@ const ProjectModal = ({
         
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-1/2 h-52 sm:h-60 md:h-72">
-            <div className="relative h-full w-full">
-              {imageLoading && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-metal-100">
-                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-metal-300 border-t-metal-500 mb-2"></div>
-                  <p className="text-sm text-metal-500">Laddar bild...</p>
-                </div>
-              )}
-              {imageUrl && (
-                <img 
-                  src={imageUrl} 
-                  alt={selectedProject.title}
-                  className="h-full w-full object-contain"
-                  onError={handleImageError}
-                  onLoad={handleImageLoad}
-                  style={{
-                    // Optimera för stora base64-bilder i modal
-                    imageRendering: imageUrl.startsWith('data:') ? 'auto' : 'auto',
-                    objectFit: 'contain'
-                  }}
-                />
-              )}
-            </div>
+            <OptimizedImage
+              src={imageUrl || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop'}
+              alt={selectedProject.title}
+              aspectRatio="auto"
+              className="h-full w-full"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+            />
           </div>
           
           <div className="p-6 md:p-8 w-full md:w-1/2 flex flex-col justify-center">

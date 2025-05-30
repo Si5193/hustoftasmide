@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+// Simple in-memory cache for images
+const imageCache = new Map<number, string>();
+
 export const useProjectImage = (projectId: number | null) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -10,6 +13,14 @@ export const useProjectImage = (projectId: number | null) => {
   useEffect(() => {
     if (!projectId) {
       setImageUrl(null);
+      setError(false);
+      return;
+    }
+
+    // Check cache first
+    if (imageCache.has(projectId)) {
+      setImageUrl(imageCache.get(projectId)!);
+      setLoading(false);
       setError(false);
       return;
     }
@@ -31,9 +42,13 @@ export const useProjectImage = (projectId: number | null) => {
         }
 
         if (!data) {
-          setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
+          const fallbackUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
+          setImageUrl(fallbackUrl);
+          imageCache.set(projectId, fallbackUrl);
           return;
         }
+
+        let finalImageUrl: string;
 
         // Prioritera Storage-bild om den finns
         if (data.storage_path && typeof data.storage_path === 'string') {
@@ -41,19 +56,24 @@ export const useProjectImage = (projectId: number | null) => {
             .from('project-images')
             .getPublicUrl(data.storage_path);
           
-          setImageUrl(publicUrl);
+          finalImageUrl = publicUrl;
         } else if (data.image_url) {
-          // Visa alla bilder direkt, inklusive base64
-          setImageUrl(data.image_url);
+          finalImageUrl = data.image_url;
         } else {
           // Fallback till placeholder endast om ingen bild finns alls
-          setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
+          finalImageUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
         }
+
+        // Cache the result
+        imageCache.set(projectId, finalImageUrl);
+        setImageUrl(finalImageUrl);
 
       } catch (error) {
         console.error('Error fetching project image:', error);
         setError(true);
-        setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
+        const fallbackUrl = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
+        setImageUrl(fallbackUrl);
+        imageCache.set(projectId, fallbackUrl);
       } finally {
         setLoading(false);
       }
