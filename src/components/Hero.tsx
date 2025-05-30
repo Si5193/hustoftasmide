@@ -2,9 +2,11 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useState } from 'react';
 
 const Hero = () => {
   const isMobile = useIsMobile();
+  const [videoError, setVideoError] = useState(false);
   
   // Function to handle scrolling to a section
   const scrollToSection = (sectionId: string) => {
@@ -19,26 +21,28 @@ const Hero = () => {
   
   return (
     <section className="relative overflow-hidden bg-metal-900 py-8 text-white md:py-16 lg:py-20">
-      {/* Video Background */}
+      {/* Video Background - now for all devices */}
       <div className="absolute inset-0 z-0">
-        {isMobile ? (
-          // Use static image on mobile to improve performance
+        {!videoError ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload={isMobile ? "metadata" : "auto"}
+            className="h-full w-full object-cover opacity-50"
+            onError={() => setVideoError(true)}
+          >
+            <source src="https://videos.pexels.com/video-files/5846598/5846598-hd_1080_1920_25fps.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          // Fallback image if video fails to load
           <div 
             className="h-full w-full bg-cover bg-center opacity-50"
             style={{ 
               backgroundImage: "url('https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?q=80&w=1169&auto=format&fit=crop')" 
             }}
           />
-        ) : (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="h-full w-full object-cover opacity-50"
-          >
-            <source src="https://videos.pexels.com/video-files/5846598/5846598-hd_1080_1920_25fps.mp4" type="video/mp4" />
-          </video>
         )}
         <div className="absolute inset-0 bg-metal-900/60"></div>
       </div>
