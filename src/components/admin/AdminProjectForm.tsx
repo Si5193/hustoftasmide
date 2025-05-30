@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,14 +23,14 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
   const [uploadResult, setUploadResult] = useState<any>(null);
 
   const { addProject, updateProject } = useSupabaseProjects();
-  const { uploadImage, isUploading } = useImageUpload();
+  const { uploadImage, isUploading, uploadProgress } = useImageUpload();
   const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    console.log('📸 Starting image upload and compression...');
+    console.log('📸 Starting optimized image upload...');
     const result = await uploadImage(file);
     
     if (result) {
@@ -168,9 +167,18 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
               ) : (
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                   {isUploading ? (
-                    <div className="flex flex-col items-center">
-                      <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-600 border-t-transparent mb-2" />
-                      <p className="text-sm text-gray-600">Komprimerar och laddar upp...</p>
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${uploadProgress.progress}%` }}
+                        />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent mb-2" />
+                        <p className="text-sm text-gray-600 font-medium">{uploadProgress.stage}</p>
+                        <p className="text-xs text-gray-500">{uploadProgress.progress}%</p>
+                      </div>
                     </div>
                   ) : (
                     <>
@@ -191,7 +199,7 @@ const AdminProjectForm = ({ initialProject, onComplete }: AdminProjectFormProps)
                         </Label>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
-                        Alla bildformat, komprimeras automatiskt till &lt;500KB
+                        Alla bildformat, optimerad komprimering till &lt;500KB
                       </p>
                     </>
                   )}

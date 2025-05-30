@@ -11,13 +11,20 @@ interface UploadResult {
   compressedSize: number;
 }
 
+interface UploadProgress {
+  stage: string;
+  progress: number;
+}
+
 export const useImageUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress>({ stage: '', progress: 0 });
   const { toast } = useToast();
 
   const uploadImage = async (file: File): Promise<UploadResult | null> => {
     try {
       setIsUploading(true);
+      setUploadProgress({ stage: 'Validerar fil...', progress: 5 });
       
       // Validate file type
       if (!file.type.startsWith('image/')) {
@@ -31,22 +38,34 @@ export const useImageUpload = () => {
 
       console.log(`🔄 Compressing image: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
       
-      // Compress the image
-      const compressed = await compressImage(file, 500, 0.8);
+      // Compress the image with progress feedback
+      const compressed = await compressImage(
+        file, 
+        500, 
+        0.8, 
+        (stage, progress) => {
+          setUploadProgress({ stage, progress });
+        }
+      );
       
       console.log(`✅ Compression complete: ${(compressed.originalSize / 1024).toFixed(1)}KB → ${(compressed.compressedSize / 1024).toFixed(1)}KB`);
       
+      setUploadProgress({ stage: 'Förbereder uppladdning...', progress: 95 });
+      
       // Generate storage path
-      const fileExtension = 'jpg'; // Always save as JPG after compression
+      const fileExtension = 'jpg';
       const fileName = `project-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
       const storagePath = `projects/${fileName}`;
 
-      // Upload to Storage
+      setUploadProgress({ stage: 'Laddar upp till server...', progress: 98 });
+
+      // Upload to Storage with optimized settings
       const { error: uploadError } = await supabase.storage
         .from('project-images')
         .upload(storagePath, compressed.blob, {
           contentType: 'image/jpeg',
-          upsert: false
+          upsert: false,
+          duplex: 'half' // Optimering för snabbare uppladdning
         });
 
       if (uploadError) {
@@ -63,6 +82,8 @@ export const useImageUpload = () => {
       const { data: { publicUrl } } = supabase.storage
         .from('project-images')
         .getPublicUrl(storagePath);
+
+      setUploadProgress({ stage: 'Klar!', progress: 100 });
 
       console.log(`✅ Image uploaded successfully: ${publicUrl}`);
       
@@ -88,8 +109,9 @@ export const useImageUpload = () => {
       return null;
     } finally {
       setIsUploading(false);
+      setUploadProgress({ stage: '', progress: 0 });
     }
   };
 
-  return { uploadImage, isUploading };
+  return { uploadImage, isUploading, uploadProgress };
 };
