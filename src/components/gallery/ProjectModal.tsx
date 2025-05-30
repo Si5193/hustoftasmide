@@ -35,6 +35,18 @@ const ProjectModal = ({
   
   const projectWithImage = { ...selectedProject, image: imageUrl || '' };
   
+  const handleImageError = () => {
+    if (selectedProject) {
+      onImageError(selectedProject.id);
+    }
+  };
+
+  const handleImageLoad = () => {
+    if (selectedProject) {
+      onImageLoad(selectedProject.id);
+    }
+  };
+  
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 overflow-y-auto"
@@ -65,8 +77,13 @@ const ProjectModal = ({
                   src={imageUrl} 
                   alt={selectedProject.title}
                   className="h-full w-full object-contain"
-                  onError={() => onImageError(selectedProject.id)}
-                  onLoad={() => onImageLoad(selectedProject.id)}
+                  onError={handleImageError}
+                  onLoad={handleImageLoad}
+                  style={{
+                    // Optimera för stora base64-bilder i modal
+                    imageRendering: imageUrl.startsWith('data:') ? 'auto' : 'auto',
+                    objectFit: 'contain'
+                  }}
                 />
               )}
             </div>

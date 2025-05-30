@@ -29,6 +29,16 @@ const ProjectCard = ({
   // Update project with loaded image
   const projectWithImage = { ...project, image: imageUrl || '' };
   
+  const handleImageError = () => {
+    console.log(`Image error for project ${project.id}`);
+    onImageError(project.id);
+  };
+
+  const handleImageLoad = () => {
+    console.log(`Image loaded for project ${project.id}`);
+    onImageLoad(project.id);
+  };
+  
   return (
     <div 
       key={project.id}
@@ -47,12 +57,14 @@ const ProjectCard = ({
               src={imageUrl}
               alt={project.title}
               className="h-full w-full object-cover transition-all duration-500 ease-out group-hover:scale-105"
-              onError={() => {
-                console.log(`Image error for project ${project.id}`);
-                onImageError(project.id);
-              }}
-              onLoad={() => onImageLoad(project.id)}
+              onError={handleImageError}
+              onLoad={handleImageLoad}
               loading="lazy"
+              style={{
+                // Optimera för stora base64-bilder
+                imageRendering: imageUrl.startsWith('data:') ? 'auto' : 'auto',
+                objectFit: 'cover'
+              }}
             />
           )}
         </div>

@@ -43,17 +43,10 @@ export const useProjectImage = (projectId: number | null) => {
           
           setImageUrl(publicUrl);
         } else if (data.image_url) {
-          // Fallback till image_url, men kontrollera om det är base64
-          if (data.image_url.startsWith('data:')) {
-            // För stora base64-bilder, visa meddelande och använd placeholder
-            console.log(`Projekt ${projectId} har base64-bild som behöver migreras`);
-            setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
-          } else {
-            // Vanlig URL
-            setImageUrl(data.image_url);
-          }
+          // Visa alla bilder direkt, inklusive base64
+          setImageUrl(data.image_url);
         } else {
-          // Ingen bild finns
+          // Fallback till placeholder endast om ingen bild finns alls
           setImageUrl('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop');
         }
 
