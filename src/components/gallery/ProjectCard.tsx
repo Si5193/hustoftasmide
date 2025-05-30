@@ -43,7 +43,7 @@ const ProjectCard = ({
   return (
     <div 
       key={project.id}
-      className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-transform hover:scale-[1.02] hover:shadow-lg min-h-[120px] md:min-h-[200px]"
+      className="group relative cursor-pointer overflow-hidden rounded-lg bg-metal-100 shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-xl min-h-[160px] md:min-h-[240px] lg:min-h-[280px] xl:min-h-[320px] w-full max-w-sm mx-auto"
       onClick={() => onOpenProject(projectWithImage, index)}
     >
       <OptimizedImage
@@ -54,14 +54,16 @@ const ProjectCard = ({
         onError={handleImageError}
       />
       
-      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent p-2 md:p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className="translate-y-2 md:translate-y-4 transform transition-transform duration-300 group-hover:translate-y-0">
-          <h3 className="mb-0.5 md:mb-1 text-xs md:text-lg font-semibold text-white leading-tight">{project.title}</h3>
-          <p className="text-xs md:text-sm text-metal-200">{project.category}</p>
+      <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-3 md:p-4 lg:p-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="translate-y-3 md:translate-y-4 transform transition-transform duration-300 group-hover:translate-y-0">
+          <h3 className="mb-1 md:mb-2 text-sm md:text-lg lg:text-xl font-semibold text-white leading-tight">
+            {project.title}
+          </h3>
+          <p className="text-xs md:text-sm lg:text-base text-metal-200">{project.category}</p>
         </div>
         
-        <div className="absolute right-2 top-2 md:right-4 md:top-4 rounded-full bg-white/10 p-1 md:p-2 backdrop-blur-sm">
-          <Plus className="text-white" size={isMobile ? 12 : 20} />
+        <div className="absolute right-3 top-3 md:right-4 md:top-4 lg:right-5 lg:top-5 rounded-full bg-white/10 p-1.5 md:p-2 lg:p-2.5 backdrop-blur-sm">
+          <Plus className="text-white" size={isMobile ? 14 : 20} />
         </div>
       </div>
     </div>
